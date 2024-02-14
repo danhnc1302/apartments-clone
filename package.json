@@ -11,15 +11,25 @@
   "dependencies": {
     "@eva-design/eva": "^2.2.0",
     "@expo/vector-icons": "^14.0.0",
+    "@flyerhq/react-native-chat-ui": "^1.4.3",
+    "@react-native-community/datetimepicker": "^7.6.2",
+    "@react-native-picker/picker": "^2.6.1",
     "@react-navigation/bottom-tabs": "^6.5.12",
     "@react-navigation/native": "^6.1.10",
     "@react-navigation/native-stack": "^6.9.18",
+    "@ui-kitten/components": "^5.3.1",
+    "axios": "^1.6.7",
     "expo": "~50.0.6",
     "expo-linking": "^6.2.2",
     "expo-notifications": "^0.27.6",
     "expo-status-bar": "~1.11.1",
     "react": "18.2.0",
-    "react-native": "0.73.4"
+    "react-native": "0.73.4",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
+    "react-native-maps": "^1.10.2",
+    "react-native-modal-datetime-picker": "^17.1.0",
+    "react-native-phone-number-input": "^2.1.0",
+    "react-native-svg": "^14.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

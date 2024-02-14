@@ -10,7 +10,7 @@ import {
 } from "../types";
 import { theme } from "../theme";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import LinkingConfiguration from "./LinkingConfiguration";
+// import LinkingConfiguration from "./LinkingConfiguration";
 
 import SearchScreen from "../screens/SearchScreen";
 import AccountScreen from "../screens/AccountScreen";
@@ -36,7 +36,7 @@ import MessagesScreen from "../screens/MessagesScreen";
 
 export default function Navigation() {
     return (
-        <NavigationContainer linking={LinkingConfiguration} theme={DefaultTheme}>
+        <NavigationContainer theme={DefaultTheme}>
             <RootNavigation />
         </NavigationContainer>
     )
