@@ -9,11 +9,13 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@eva-design/eva": "^2.2.0",
     "@expo/vector-icons": "^14.0.0",
     "@react-navigation/bottom-tabs": "^6.5.12",
     "@react-navigation/native": "^6.1.10",
     "@react-navigation/native-stack": "^6.9.18",
     "expo": "~50.0.6",
+    "expo-linking": "^6.2.2",
     "expo-notifications": "^0.27.6",
     "expo-status-bar": "~1.11.1",
     "react": "18.2.0",
