@@ -29,7 +29,8 @@
     "react-native-maps": "^1.10.2",
     "react-native-modal-datetime-picker": "^17.1.0",
     "react-native-phone-number-input": "^2.1.0",
-    "react-native-svg": "^14.1.0"
+    "react-native-svg": "^14.1.0",
+    "react-native-woodpicker": "^0.3.17"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
