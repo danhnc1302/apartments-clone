@@ -121,7 +121,7 @@ import {
         ) : (
           <Pressable onPress={onImagePress}>
             <Image
-              source={require("../assets/images/NoImage.jpeg")}
+              source={require("../assets/NoImage.jpeg")}
               style={[styles.image, imageStyle]}
             />
           </Pressable>
