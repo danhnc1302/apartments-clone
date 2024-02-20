@@ -19,8 +19,8 @@ const LIST_MARGIN = 10
 const WIDTH = Dimensions.get("screen").width - LIST_MARGIN * 2
 
 const SearchScreen = () => {
-  const [scrollAnimation] = useState(new Animated.Value(0));
-  const navigation = useNavigation();
+  const viewConfigRef = { viewAreaCoveragePercentThreshold: 95};
+
   const property = {
     images: [
       "https://images1.apartments.com/i2/r15AJDxorBZooYLEXNeGbU2qua2xs-1sSRUfC_VHPn8/117/no-17-allapattah-residences-miami-fl-building-photo.jpg?p=1",
@@ -41,19 +41,18 @@ const SearchScreen = () => {
 
   const flatListRef = useRef<FlatList | null>(null)
   const [activeIndex, setActiveIndex] = useState(0)
-  const onViewRef = useRef(({changed}:{changed: any}) => {
-    if(changed[0].isViewable) {
+  const onViewRef = useRef(({ changed }: { changed: any }) => {
+    if (changed[0].isViewable) {
       setActiveIndex(changed[0].index)
+      console.log("Active Index:", changed[0].index);
     }
   })
 
   const handlePressLeft = () => {
-    console.log(activeIndex)
-
-    if(activeIndex === 0) {
+    if (activeIndex === 0) {
       return flatListRef.current?.scrollToIndex({
         animated: false,
-        index: property.images.length - 1, 
+        index: property.images.length - 1,
       })
     }
     flatListRef.current?.scrollToIndex({
@@ -62,18 +61,16 @@ const SearchScreen = () => {
   }
 
   const handlePressRight = () => {
-    console.log(activeIndex)
-    if(activeIndex === property.images.length - 1) {
+    if (activeIndex === property.images.length - 1) {
       return flatListRef.current?.scrollToIndex({
         animated: false,
-        index: 0, 
+        index: 0,
       })
     }
     flatListRef.current?.scrollToIndex({
       index: activeIndex + 1
     })
   }
-
   return (
     <Screen style={{ marginHorizontal: LIST_MARGIN }}>
       <View >
@@ -84,6 +81,7 @@ const SearchScreen = () => {
           showsHorizontalScrollIndicator={false}
           snapToAlignment='center'
           pagingEnabled
+          viewabilityConfig={viewConfigRef}
           onViewableItemsChanged={onViewRef.current}
           renderItem={({ item, index }) =>
             <Image
