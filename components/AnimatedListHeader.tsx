@@ -2,9 +2,21 @@ import React, { useState } from "react";
 import {
     Animated,
     LayoutChangeEvent,
+    View,
+    TouchableOpacity,
+    Platform,
+    FlatList,
+    StyleSheet,
 } from "react-native";
+import { Divider, Text } from "@ui-kitten/components";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { HEADERHEIGHT } from "../constants";
+import { HEADERHEIGHT, LISTMARGIN } from "../constants";
+import { theme } from "../theme";
+
+import { HeaderInput } from "./HeaderInput";
+import { HeaderFilterButtons } from "./HeaderFilterButtons";
+import { HeaderLogistics } from "./HeaderLogistics";
 
 export const AnimatedListHeader = ({ scrollAnimation }: { scrollAnimation: Animated.Value }) => {
     const [offsetAnimation] = useState(new Animated.Value(0))
@@ -49,19 +61,33 @@ export const AnimatedListHeader = ({ scrollAnimation }: { scrollAnimation: Anima
 
     return (
         <Animated.View
-            style={{
-                position: "absolute",
-                top: 0,
-                right: 0,
-                left: 0,
-                zIndex: 1000,
-                height: HEADERHEIGHT,
-                backgroundColor: "white",
-                transform: [{ translateY: navBarTranslate }]
-            }}
+            style={[styles.container, {transform: [{ translateY: navBarTranslate }]}]}
             onLayout={onLayout}
         >
-            
+            <View style={{ marginHorizontal: LISTMARGIN }}>
+                <HeaderInput />
+                <HeaderFilterButtons/>
+            </View>
+            <Divider style={styles.divider} />
+            <HeaderLogistics />
         </Animated.View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        position: "absolute",
+        top: 0,
+        right: 0,
+        left: 0,
+        zIndex: 1000,
+        height: HEADERHEIGHT,
+        backgroundColor: "white",
+    },
+    defaultMarginHorizontal: {
+        marginHorizontal: LISTMARGIN,
+    },
+    divider: {
+        backgroundColor: theme["color-gray"]
+    },
+})
