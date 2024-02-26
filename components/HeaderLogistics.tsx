@@ -12,29 +12,66 @@ import { theme } from "../theme";
 
 import { Row } from "./Row";
 
-export const HeaderLogistics = () => {
+const HeaderLogisticsButton = ({
+    label,
+    onPress,
+    iconName,
+    style
+}: {
+    label: string,
+    onPress: () => void,
+    iconName?: any,
+    style?: any
+}) => {
+    return (
+        <TouchableOpacity onPress={onPress}>
+            <Row style={[styles.row, style]}>
+                {iconName ? (
+                    <MaterialCommunityIcons
+                        name={iconName}
+                        color={theme["color-info-300"]}
+                        size={18}
+                    />
+                ) : null}
+                <Text category={"c1"} style={styles.logisticsButtonText}>{label}</Text>
+            </Row>
+        </TouchableOpacity>
+    )
+}
+
+const handleOnPress = () => {
+
+}
+
+export const HeaderLogistics = ({
+    mapShown,
+    setMapShown
+}: {
+    mapShown: boolean,
+    setMapShown: (bool: boolean) => void
+}) => {
+
+    const handleMapPress = () => {
+        if (mapShown) return setMapShown(false)
+        setMapShown(true)
+    }
+
     return (
         <Row style={styles.container}>
             <Row style={styles.row}>
                 <MaterialCommunityIcons name="map-marker" size={18} color={theme["color-primary-500"]} />
                 <Text category={"c1"} appearance={"hint"}>12 Available</Text>
-                <TouchableOpacity>
-                    <Text category={"c1"} style={{ color: theme["color-info-300"], fontWeight: "bold", marginLeft: 10 }}>Save</Text>
-                </TouchableOpacity>
+                <HeaderLogisticsButton label="Save" onPress={handleOnPress} style={{ marginLeft: 10 }} />
             </Row>
             <Row style={styles.row}>
-                <Row style={styles.row}>
-                    <MaterialCommunityIcons name="sort" color={theme["color-info-300"]} size={18} />
-                    <TouchableOpacity>
-                        <Text category={"c1"} style={styles.logisticsButtonText}>Save</Text>
-                    </TouchableOpacity>
-                </Row>
-                <Row style={[styles.row, { marginLeft: 20 }]}>
-                    <MaterialCommunityIcons name="map-outline" color={theme["color-info-300"]} size={18} />
-                    <TouchableOpacity>
-                        <Text category={"c1"} style={styles.logisticsButtonText}>sort</Text>
-                    </TouchableOpacity>
-                </Row>
+                <HeaderLogisticsButton label="Sort" onPress={handleOnPress} iconName="sort" />
+                {
+                    mapShown ? (
+                        <HeaderLogisticsButton label="List" onPress={handleMapPress} iconName="format-list-bulleted" style={{ marginLeft: 20 }} />
+                    ):(
+                        <HeaderLogisticsButton label="Map" onPress={handleMapPress} iconName="map-outline" style={{ marginLeft: 20 }} />
+                    )
+                }
             </Row>
         </Row>
     )
@@ -46,13 +83,13 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         marginHorizontal: LISTMARGIN,
         marginVertical: 5,
-      },
-      row: {
+    },
+    row: {
         alignItems: "center",
-      },
-      logisticsButtonText: {
+    },
+    logisticsButtonText: {
         color: theme["color-info-300"],
         fontWeight: "bold",
         marginLeft: 5,
-      },
+    },
 })

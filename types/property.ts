@@ -43,18 +43,20 @@ import { TempApartment } from "./tempApartment";
 
 
 export type Property = {
-  id: number;
+  ID: number;
   images: string[];
   rentLow: number;
   rentHigh: number;
-  bedRoomLow: number;
-  bedRoomHigh: number;
+  bedroomLow: number;
+  bedroomHigh: number;
   name: string;
   street: string;
   city: string;
   state: string;
-  zip: string;
+  zip: number;
   tags: string[];
+  lat: number;
+  lng: number;
 };
 
 
