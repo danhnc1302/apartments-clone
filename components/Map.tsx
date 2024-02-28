@@ -2,10 +2,12 @@ import React, { useRef, useState } from "react";
 import {
     View,
     StyleSheet,
-    Platform
+    Platform,
+    TouchableOpacity
 } from "react-native";
 import MapView from "react-native-maps";
 import { useNavigation } from "@react-navigation/native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { theme } from "../theme";
 import { Property } from "../types/property";
@@ -17,6 +19,15 @@ export const Map = ({ properties }: { properties: Property[] }) => {
     const navigation = useNavigation()
     const [activeIndex, setActiveIndex] = useState(-1)
     const mapRef = useRef<MapView | null>(null)
+
+    const unFocusProperty = () => {
+        setActiveIndex(-1)
+        navigation.setOptions({ tabBarStyle: {display: "flexs"} })
+    }
+
+    const handleMapPress = () => {
+        if(Platform.OS === "android") unFocusProperty()
+    }
 
     const handleMarkerPress = (index: number) => {
         if (Platform.OS === "ios") {
@@ -30,13 +41,22 @@ export const Map = ({ properties }: { properties: Property[] }) => {
 
     return (
         <View style={styles.container}>
-            <MapView style={styles.map}>
+            <MapView style={styles.map} userInterfaceStyle={"light"} ref={mapRef} onPress={handleMapPress}>
                 {
                     properties.map((property, index) => <MapMarker lat={property.lat} lng={property.lng} color={activeIndex === index ? theme['color-info-400'] : theme['color-info-500']} onPress={() => handleMarkerPress(index)} />)
                 }
             </MapView>
             {
-                activeIndex > -1 && <Card property={properties[activeIndex]} style={styles.card}/>
+                activeIndex > -1 && (
+                    <>
+                        {Platform.OS === "ios" && (
+                            <TouchableOpacity style={styles.exit} onPress={unFocusProperty}>
+                                <MaterialCommunityIcons name="close" color={theme["color-primary-500"]} size={24}/>
+                            </TouchableOpacity>
+                        )}
+                        <Card property={properties[activeIndex]} style={styles.card}/>
+                    </>
+                )
             }
         </View>
     )

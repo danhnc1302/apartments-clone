@@ -76,7 +76,7 @@ export const ImageCarousel = ({ images }: { images: string[] }) => {
 const styles = StyleSheet.create({
   image: {
     width: WIDTH,
-    height: 225,
+    height: 200,
     borderTopRightRadius: 5,
     borderTopLeftRadius: 5
   },

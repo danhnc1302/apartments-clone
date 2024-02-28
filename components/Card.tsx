@@ -9,6 +9,7 @@ import { Property } from '../types/property';
 
 import { ImageCarousel } from './ImageCarousel';
 import { CardInformation } from './CardInformation';
+import { LISTMARGIN } from '../constants';
 
 export const Card = ({
   property,
@@ -23,11 +24,17 @@ export const Card = ({
 }) => {
 
   return (
-    <View style={style}>
+    <View style={[style, styles.container]}>
       <ImageCarousel images={property.images} />
       <CardInformation property={property} />
     </View>
   )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    marginHorizontal: LISTMARGIN,
+    borderRadius: 3,
+    backgroundColor: "white"
+  }
+})

@@ -6,6 +6,7 @@ import {
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Text } from "@ui-kitten/components";
+import { useNavigation } from "@react-navigation/native"; 
 
 import { LISTMARGIN } from "../constants";
 import { theme } from "../theme";
@@ -23,6 +24,8 @@ const HeaderLogisticsButton = ({
     iconName?: any,
     style?: any
 }) => {
+
+    
     return (
         <TouchableOpacity onPress={onPress}>
             <Row style={[styles.row, style]}>
@@ -51,7 +54,10 @@ export const HeaderLogistics = ({
     setMapShown: (bool: boolean) => void
 }) => {
 
+    const navigation = useNavigation()
+
     const handleMapPress = () => {
+        navigation.setOptions({ tabBarStyle: {display: "flex"} })
         if (mapShown) return setMapShown(false)
         setMapShown(true)
     }
