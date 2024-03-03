@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -64,5 +65,6 @@ func fetchLocations(url string, ctx iris.Context) {
 		return
 	}
 
+	fmt.Print(objMap)
 	ctx.JSON(objMap)
 }

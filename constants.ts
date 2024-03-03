@@ -12,3 +12,14 @@ if (StatusBar.currentHeight) androidNotch = StatusBar.currentHeight;
 androidHeight += androidNotch;
 
 export const HEADERHEIGHT = Platform.OS === "ios" ? iosHeight : androidHeight;
+
+const serverUrl = "http://172.16.3.50:4000/api";
+const location = "/location";
+const locationEndpoint = serverUrl + location;
+
+export const endpoints = {
+    searchEndpoint: locationEndpoint + "/search",
+    autoCompleteEndpoint: locationEndpoint + "/autocomplte"
+}
+
+

@@ -6,14 +6,16 @@ import {
     StyleSheet
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native"
 
 import { theme } from "../theme";
 
 import { Row } from "./Row";
 
 export const HeaderInput = () => {
+    const navigation = useNavigation()
     return (
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={() => navigation.navigate("FindLocations")}>
             <Row style={{ alignItems: "center" }}>
                 <MaterialCommunityIcons name="magnify" size={30} color={theme["color-primary-500"]} />
                 <Text style={styles.text}>Find your location</Text>

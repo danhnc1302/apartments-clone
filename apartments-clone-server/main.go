@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"apartments-clone-server/routes"
 	"github.com/joho/godotenv"
 	"github.com/kataras/iris/v12"
