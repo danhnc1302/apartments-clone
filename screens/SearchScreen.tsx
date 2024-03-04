@@ -25,13 +25,36 @@ const SearchScreen = ({
   const navigation = useNavigation()
   const [scrollAnimation] = useState(new Animated.Value(0))
   const [mapShown, setMapShown] = useState<boolean>(false)
+  const mapRef = useRef<MapView | null>(null)
+  
+  useEffect(() => {
+    if(route.params) {
+      mapRef?.current?.animateCamera({
+        center: {
+          latitude: Number(route.params.lat),
+          longitude: Number(route.params.lon)
+        }
+      })
+    }
+  },[route])
 
   return (
     <Screen>
       <AnimatedListHeader scrollAnimation={scrollAnimation} setMapShown={setMapShown} mapShown={mapShown} />
       {
         mapShown ? (
-          <Map properties={properties} />
+          <Map 
+            properties={properties} 
+            mapRef={mapRef}
+            initialRegion={
+              route.params ? {
+                latitude: Number(route.params.lat),
+                longitude: Number(route.params.lon),
+                latitudeDelta: 0.4,
+                longitudeDelta: 0.4
+              } : undefined
+            }
+          />
         ) :
           (<Animated.FlatList
             onScroll={Animated.event([

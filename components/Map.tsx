@@ -5,7 +5,7 @@ import {
     Platform,
     TouchableOpacity
 } from "react-native";
-import MapView from "react-native-maps";
+import MapView, { Region } from "react-native-maps";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -15,10 +15,17 @@ import { Property } from "../types/property";
 import { MapMarker } from "./MapMarker";
 import { Card } from "./Card";
 
-export const Map = ({ properties }: { properties: Property[] }) => {
+export const Map = ({
+    properties,
+    mapRef,
+    initialRegion
+}: {
+    properties: Property[],
+    mapRef: React.MutableRefObject<MapView | null>,
+    initialRegion?: Region | undefined
+}) => {
     const navigation = useNavigation()
     const [activeIndex, setActiveIndex] = useState(-1)
-    const mapRef = useRef<MapView | null>(null)
 
     const unFocusProperty = () => {
         setActiveIndex(-1)
@@ -41,7 +48,13 @@ export const Map = ({ properties }: { properties: Property[] }) => {
 
     return (
         <View style={styles.container}>
-            <MapView style={styles.map} userInterfaceStyle={"light"} ref={mapRef} onPress={handleMapPress}>
+            <MapView 
+                style={styles.map} 
+                userInterfaceStyle={"light"} 
+                ref={mapRef} 
+                onPress={handleMapPress}
+                initialRegion={initialRegion ? initialRegion : undefined}
+            >
                 {
                     properties.map((property, index) => <MapMarker lat={property.lat} lng={property.lng} color={activeIndex === index ? theme['color-info-400'] : theme['color-info-500']} onPress={() => handleMarkerPress(index)} />)
                 }
