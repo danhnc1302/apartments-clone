@@ -8,6 +8,7 @@ export const getSuggestedLocations = async (text: string, limit?: number) => {
         let finalLimit = 8;
         if (limit) finalLimit = limit
         const url = `${endpoints.autoCompleteEndpoint}?location=${text}&limit=${finalLimit}`;
+        console.log(url)
         const { data } = await axios.get<Location[]>(url);
         if (data) return data;
         return [];

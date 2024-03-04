@@ -3,9 +3,11 @@ import {
   Platform,
   StyleSheet,
   View,
-  ScrollView
+  ScrollView,
+  FlatList,
+  TouchableOpacity
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, NavigationProp  } from "@react-navigation/native";
 import { Button, Input, Text } from "@ui-kitten/components";
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
@@ -36,9 +38,10 @@ const FindLocationsScreen = () => {
   const handleSubmitEditing = async () => {
     const locations = await getSuggestedLocations(value);
     if (locations.length > 0) {
-      console.log("navigation to search screen passing in", locations[0]);
+      handleNavigate(navigation, locations[0]);
     }
   }
+
 
   const getInput = () => {
     if (Platform.OS === "ios") {
@@ -75,13 +78,53 @@ const FindLocationsScreen = () => {
         </Button>
       </Row>
     )
-
   }
+
+  const getFormattedLocationText = (item: Location) => {
+    let location = item.address.name;
+    if (item.type === "city" && item.address.state) location += ", " + item.address.state;
+    return location;
+  }
+
+  const SuggestedText = ({ locationItem }: { locationItem: Location }) => {
+    const location = getFormattedLocationText(locationItem);
+    return (
+      <Row style={styles.suggestionContainer}>
+        <Text>{location}</Text>
+      </Row>
+    )
+  }
+
+  const handleNavigate = (navigation: NavigationProp<any, any>,location: Location) => {
+    navigation.navigate("Root", {
+      screen: "Search",
+      params: {
+        location: getFormattedLocationText(location),
+        lat: location.lat,
+        lon: location.lon,
+        boundingBox: location.boundingbox,
+      },
+    })
+  }
+
+
   return (
     <Screen>
       {Platform.OS === "ios" ? <ModalHeader /> : null}
       <View style={styles.screenContent}>
         {getInput()}
+        {suggestions.length > 0 ? (
+          <FlatList
+            data={suggestions}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => item.place_id + index}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity onPress={() => handleNavigate(navigation, item)} >
+                <SuggestedText locationItem={item} />
+              </TouchableOpacity>
+            )}
+          />
+        ) : null}
       </View>
     </Screen>
   );

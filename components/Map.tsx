@@ -22,11 +22,11 @@ export const Map = ({ properties }: { properties: Property[] }) => {
 
     const unFocusProperty = () => {
         setActiveIndex(-1)
-        navigation.setOptions({ tabBarStyle: {display: "flexs"} })
+        navigation.setOptions({ tabBarStyle: { display: "flexs" } })
     }
 
     const handleMapPress = () => {
-        if(Platform.OS === "android") unFocusProperty()
+        if (Platform.OS === "android") unFocusProperty()
     }
 
     const handleMarkerPress = (index: number) => {
@@ -51,10 +51,10 @@ export const Map = ({ properties }: { properties: Property[] }) => {
                     <>
                         {Platform.OS === "ios" && (
                             <TouchableOpacity style={styles.exit} onPress={unFocusProperty}>
-                                <MaterialCommunityIcons name="close" color={theme["color-primary-500"]} size={24}/>
+                                <MaterialCommunityIcons name="close" color={theme["color-primary-500"]} size={24} />
                             </TouchableOpacity>
                         )}
-                        <Card property={properties[activeIndex]} style={styles.card}/>
+                        <Card property={properties[activeIndex]} style={styles.card} />
                     </>
                 )
             }

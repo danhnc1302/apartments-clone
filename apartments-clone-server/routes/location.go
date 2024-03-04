@@ -36,6 +36,7 @@ func Search(ctx iris.Context) {
 }
 
 func fetchLocations(url string, ctx iris.Context) {
+	fmt.Print(url)
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", url, nil)
 	res, locationErr := client.Do(req)

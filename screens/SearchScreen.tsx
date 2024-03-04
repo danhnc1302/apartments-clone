@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import {
   Animated,
   StyleSheet,
@@ -13,22 +13,25 @@ import { Screen } from '../components/Screen';
 import { Card } from '../components/Card';
 import { AnimatedListHeader } from '../components/AnimatedListHeader';
 import { Map } from '../components/Map';
-
+import { SearchScreenParams } from '../types';
 import { properties } from '../data/properties';
 
-const SearchScreen = () => {
- 
-  const navigation = useNavigation()
+const SearchScreen = ({
+  route,
+}: {
+  route: { params: SearchScreenParams };
+}) => {
 
+  const navigation = useNavigation()
   const [scrollAnimation] = useState(new Animated.Value(0))
   const [mapShown, setMapShown] = useState<boolean>(false)
 
   return (
     <Screen>
-      <AnimatedListHeader scrollAnimation={scrollAnimation} setMapShown={setMapShown} mapShown={mapShown}/>
+      <AnimatedListHeader scrollAnimation={scrollAnimation} setMapShown={setMapShown} mapShown={mapShown} />
       {
         mapShown ? (
-          <Map properties={properties}/>
+          <Map properties={properties} />
         ) :
           (<Animated.FlatList
             onScroll={Animated.event([
