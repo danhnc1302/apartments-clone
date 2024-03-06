@@ -14,14 +14,39 @@ import { ModalHeader } from "../components/ModalHeader";
 import { theme } from "../theme";
 import { Location } from "../types/locationIQ";
 import { Row } from "../components/Row";
-
+import { CurrentLocationButton } from '../components/CurrentLocationButton';
 
 import { getSuggestedLocations } from "../services/location";
+import { getFormattedLocationText } from "../utils/getFormattedLocationText";
+import { RecentSearchList } from "../components/RecentSearchList";
+import { useQueryClient } from "react-query";
 
 const FindLocationsScreen = () => {
   const navigation = useNavigation();
   const [suggestions, setSuggestions] = useState<Location[]>([]);
-  const [value, setValue] = useState("")
+  const [value, setValue] = useState("");
+  const queryClient = useQueryClient();
+  const recentSearches: Location[] | undefined = queryClient.getQueryData("recentSearches") 
+
+  const setRecentSearch = (location: Location) => {
+    queryClient.setQueryData("recentSearches", () => {
+      if (recentSearches) {
+        let included = false;
+        for (let i of recentSearches) {
+          if (
+            i.display_name === location.display_name &&
+            i.lon === location.lon &&
+            i.lat === location.lat
+          ) {
+            included = true;
+            break;
+          }
+        }
+        if (!included) return [location, ...recentSearches];
+      }
+      return [location];
+    })
+  }
 
   const handleChange = async (val: string) => {
     setValue(val)
@@ -80,11 +105,7 @@ const FindLocationsScreen = () => {
     )
   }
 
-  const getFormattedLocationText = (item: Location) => {
-    let location = item.address.name;
-    if (item.type === "city" && item.address.state) location += ", " + item.address.state;
-    return location;
-  }
+  
 
   const SuggestedText = ({ locationItem }: { locationItem: Location }) => {
     const location = getFormattedLocationText(locationItem);
@@ -96,6 +117,7 @@ const FindLocationsScreen = () => {
   }
 
   const handleNavigate = (navigation: NavigationProp<any, any>,location: Location) => {
+    setRecentSearch(location)
     navigation.navigate("Root", {
       screen: "Search",
       params: {
@@ -124,7 +146,12 @@ const FindLocationsScreen = () => {
               </TouchableOpacity>
             )}
           />
-        ) : null}
+        ) : (
+          <ScrollView bounces={false}>
+            <CurrentLocationButton style={styles.currentLocationButton}/>
+            <RecentSearchList style={styles.recentSearchContainer} recentSearches={recentSearches}/>
+          </ScrollView>
+        )}
       </View>
     </Screen>
   );
@@ -148,5 +175,7 @@ const styles = StyleSheet.create({
   currentLocationButton: {
     marginTop: 40,
   },
-  recentSearchContainer: { marginTop: 30 },
+  recentSearchContainer: { 
+    marginTop: 30 
+  },
 });

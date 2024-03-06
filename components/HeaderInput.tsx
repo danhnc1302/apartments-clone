@@ -12,13 +12,13 @@ import { theme } from "../theme";
 
 import { Row } from "./Row";
 
-export const HeaderInput = () => {
+export const HeaderInput = ({location}:{location: string}) => {
     const navigation = useNavigation()
     return (
         <TouchableOpacity style={styles.container} onPress={() => navigation.navigate("FindLocations")}>
             <Row style={{ alignItems: "center" }}>
                 <MaterialCommunityIcons name="magnify" size={30} color={theme["color-primary-500"]} />
-                <Text style={styles.text}>Find your location</Text>
+                <Text style={styles.text}>{location}</Text>
             </Row>
         </TouchableOpacity>
     )

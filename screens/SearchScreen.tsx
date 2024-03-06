@@ -15,6 +15,7 @@ import { AnimatedListHeader } from '../components/AnimatedListHeader';
 import { Map } from '../components/Map';
 import { SearchScreenParams } from '../types';
 import { properties } from '../data/properties';
+  
 
 const SearchScreen = ({
   route,
@@ -40,7 +41,12 @@ const SearchScreen = ({
 
   return (
     <Screen>
-      <AnimatedListHeader scrollAnimation={scrollAnimation} setMapShown={setMapShown} mapShown={mapShown} />
+      <AnimatedListHeader 
+        scrollAnimation={scrollAnimation} 
+        setMapShown={setMapShown} 
+        mapShown={mapShown} 
+        location={route.params ? route.params.location : "Find a location"}
+      />
       {
         mapShown ? (
           <Map 

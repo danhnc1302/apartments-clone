@@ -21,11 +21,13 @@ import { HeaderLogistics } from "./HeaderLogistics";
 export const AnimatedListHeader = ({ 
     scrollAnimation, 
     mapShown,
-    setMapShown 
+    setMapShown,
+    location
 }: { 
     scrollAnimation: Animated.Value,
     mapShown: boolean,
-    setMapShown: (bool: boolean) => void
+    setMapShown: (bool: boolean) => void,
+    location: string
 }) => {
     const [offsetAnimation] = useState(new Animated.Value(0))
     const [clampedScroll, setClampedScroll] = useState(
@@ -73,7 +75,7 @@ export const AnimatedListHeader = ({
             onLayout={onLayout}
         >
             <View style={{ marginHorizontal: LISTMARGIN }}>
-                <HeaderInput />
+                <HeaderInput location={location}/>
                 <HeaderFilterButtons/>
             </View>
             <Divider style={styles.divider} />
