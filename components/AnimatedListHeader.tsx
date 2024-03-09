@@ -22,12 +22,14 @@ export const AnimatedListHeader = ({
     scrollAnimation, 
     mapShown,
     setMapShown,
-    location
+    location,
+    availableProperties,
 }: { 
     scrollAnimation: Animated.Value,
     mapShown: boolean,
     setMapShown: (bool: boolean) => void,
-    location: string
+    location: string,
+    availableProperties?: number
 }) => {
     const [offsetAnimation] = useState(new Animated.Value(0))
     const [clampedScroll, setClampedScroll] = useState(
@@ -79,7 +81,7 @@ export const AnimatedListHeader = ({
                 <HeaderFilterButtons/>
             </View>
             <Divider style={styles.divider} />
-            <HeaderLogistics mapShown={mapShown} setMapShown={setMapShown}/>
+            <HeaderLogistics mapShown={mapShown} setMapShown={setMapShown} availableProperties={availableProperties}/>
         </Animated.View>
     )
 }

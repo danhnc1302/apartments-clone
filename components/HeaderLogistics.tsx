@@ -48,10 +48,12 @@ const handleOnPress = () => {
 
 export const HeaderLogistics = ({
     mapShown,
-    setMapShown
+    setMapShown,
+    availableProperties
 }: {
     mapShown: boolean,
-    setMapShown: (bool: boolean) => void
+    setMapShown: (bool: boolean) => void,
+    availableProperties?: number
 }) => {
 
     const navigation = useNavigation()
@@ -66,7 +68,7 @@ export const HeaderLogistics = ({
         <Row style={styles.container}>
             <Row style={styles.row}>
                 <MaterialCommunityIcons name="map-marker" size={18} color={theme["color-primary-500"]} />
-                <Text category={"c1"} appearance={"hint"}>12 Available</Text>
+                <Text category={"c1"} appearance={"hint"}>{availableProperties ? `${availableProperties} Spaces Available` : `Search Space`}</Text>
                 <HeaderLogisticsButton label="Save" onPress={handleOnPress} style={{ marginLeft: 10 }} />
             </Row>
             <Row style={styles.row}>
