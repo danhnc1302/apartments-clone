@@ -59,7 +59,7 @@ const SearchScreen = ({
         scrollAnimation={scrollAnimation}
         setMapShown={setMapShown}
         mapShown={mapShown}
-        location={route.params ? route.params.location : "Find a location"}
+        location={location ? location : "Find a location"}
         availableProperties={properties ? properties.length : undefined}
       />
       {
@@ -67,6 +67,9 @@ const SearchScreen = ({
           <Map
             properties={properties}
             mapRef={mapRef}
+            setLocation={setLocation}
+            setProperties={setProperties}
+            location={location ? location : "Find a location"}
             initialRegion={
               route.params ? {
                 latitude: Number(route.params.lat),
