@@ -30,7 +30,7 @@ export const PasswordInput = ({
     status?: string
 }) => {
 
-    const [passwordHidden, setPasswordHidden] = useState<boolean>(false);
+    const [passwordHidden, setPasswordHidden] = useState<boolean>(true);
 
     const getEyeIcon = () => {
         if (passwordHidden) {
