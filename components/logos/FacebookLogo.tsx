@@ -1,24 +1,20 @@
-import * as React from "react"
-import Svg, { Path } from "react-native-svg"
+import Svg, { Path } from "react-native-svg";
 
-export function FacebookLogo(props: any) {
-  return (
-    <Svg
-      width="800px"
-      height="800px"
-      viewBox="0 0 48 48"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <Path
-        d="M225.638 208H202.65a2.65 2.65 0 01-2.649-2.65v-42.7a2.649 2.649 0 012.65-2.65h42.701a2.649 2.649 0 012.649 2.65v42.7a2.65 2.65 0 01-2.649 2.65h-12.232v-18.588h6.24l.934-7.244h-7.174v-4.625c0-2.098.583-3.527 3.59-3.527l3.836-.002v-6.479c-.663-.088-2.94-.285-5.59-.285-5.53 0-9.317 3.376-9.317 9.575v5.343h-6.255v7.244h6.255V208z"
-        transform="translate(-200 -160)"
-        fill="#4460A0"
-        stroke="none"
-        strokeWidth={1}
-        fillRule="evenodd"
-      />
-    </Svg>
-  )
-}
-
+export const FacebookLogo = (props: any) => (
+  <Svg
+    width={48}
+    height={48}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <Path
+      d="M24 0c13.255 0 24 10.746 24 24 0 13.256-10.745 24-24 24C10.744 48 0 37.255 0 24 0 10.746 10.745 0 24 0Z"
+      fill="#3B5998"
+    />
+    <Path
+      d="M26.922 16.522h3.093v-4.569H26.38v.017c-4.405.156-5.308 2.632-5.388 5.233h-.009v2.282h-3v4.474h3v11.994h4.521V23.959h3.704l.715-4.474h-4.417v-1.379c0-.879.585-1.584 1.417-1.584Z"
+      fill="#fff"
+    />
+  </Svg>
+);

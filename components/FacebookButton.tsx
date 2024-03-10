@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         width: "100%",
         borderRadius: 5,
-        backgroundColor: "white",
+        backgroundColor: "#3B5998",
         height: 50
     },
     logo: {
