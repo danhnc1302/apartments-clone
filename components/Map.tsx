@@ -43,7 +43,6 @@ export const Map = ({
     const [boundingBox, setBoundingBox] = useState<number[]>([]);
     const navigation = useNavigation();
 
-
     useEffect(() => {
         if (location === "Map Area") return;
         if (initialRegion) {

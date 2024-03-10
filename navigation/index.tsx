@@ -116,10 +116,7 @@ function RootNavigation() {
 const BottomTab = createBottomTabNavigator<RootTabParamList>()
 function BottomTabNavigator() {
     return (
-        <BottomTab.Navigator initialRouteName="Search"
-            screenOptions={{
-                tabBarActiveTintColor: theme["color-primary-500"],
-            }}>
+        <BottomTab.Navigator initialRouteName="Search">
             <BottomTab.Screen
                 name="Search"
                 component={SearchScreen}

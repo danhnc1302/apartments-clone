@@ -175,6 +175,11 @@ const AccountScreen = () => {
           </>
         )}
       </ScrollView>
+      <Button onPress={() => {
+        navigation.navigate("ResetPassword", { token: "fjkajkldjf;ladk" })
+      }}>
+          Reset Password
+      </Button>
     </Screen>
   );
 };

@@ -18,7 +18,6 @@ export const ButtonList = ({
 }) => {
   const getListHeaderComponent = () => {
     if (!header) return null;
-
     return (
       <View style={[styles.headerContainer, { marginTop: marginTop ? 35 : 0 }]}>
         <Text style={styles.headerText}>{header}</Text>
@@ -42,9 +41,7 @@ export const ButtonList = ({
                 backgroundColor: pressed ? theme["color-gray"] : "#f2f2f2",
               },
             ];
-
             if (index !== data.length - 1) arr.push(styles.container);
-
             return arr;
           }}
         >

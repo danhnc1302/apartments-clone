@@ -1,11 +1,22 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { 
+  StyleSheet, 
+  ViewStyle,
+  View, 
+} from 'react-native';
+import { Button, Text } from '@ui-kitten/components';
+
+import { theme } from '../theme';
+
+import { Screen } from '../components/Screen';
 
 const SignUpScreen = () => {
   return (
-    <View>
-      <Text>SignUpScreen</Text>
-    </View>
+    <Screen>
+      <Text>
+        Sign Up Screen
+      </Text>
+    </Screen>
   )
 }
 

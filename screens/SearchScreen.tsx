@@ -17,7 +17,6 @@ import { Map } from '../components/Map';
 import { SearchScreenParams } from '../types';
 import { Property } from '../types/property';
 
-
 const SearchScreen = ({
   route,
 }: {
@@ -30,7 +29,6 @@ const SearchScreen = ({
   const mapRef = useRef<MapView | null>(null);
   const [properties, setProperties] = useState<Property[]>([]);
   const [location, setLocation] = useState<string | undefined>(undefined)
-
 
   useEffect(() => {
     if (route.params) {
