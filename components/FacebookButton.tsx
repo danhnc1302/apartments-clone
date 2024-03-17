@@ -21,7 +21,7 @@ export const FacebookButton = ({
 }: {
     text: string,
     style?: ViewStyle,
-    onPress?: () => void
+    onPress: () => void
 }) => {
     return (
         <TouchableOpacity style={[styles.button, style]} onPress={onPress}>

@@ -1,11 +1,12 @@
-import React, {useContext} from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useContext } from "react";
+import { View, StyleSheet, Linking } from "react-native";
 import { Input, Button, Text } from "@ui-kitten/components";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useMutation } from "react-query";
 import { useNavigation } from "@react-navigation/native";
+import * as Facebook from "expo-auth-session/providers/facebook";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
@@ -19,14 +20,22 @@ import { Loading } from "../components/Loading";
 import { useAuth } from "../hooks/useAuth";
 import { AuthContext } from "../context";
 import { registerUser } from "../services/user";
+import { handleError } from "../utils/handleErrors";
 
 const SignUpScreen = () => {
-  
+
   const navigation = useNavigation();
   const { login } = useAuth();
 
+  const [___, ____, fbPromptAsync] = Facebook.useAuthRequest({
+    clientId: "1136500530862081",
+    // redirectUri: 'https://auth.expo.io/@danhdevapp/apartments-clone',
+    // redirectUri: 'exp://172.16.1.24:8081',
+    redirectUri: Linking.makeUrl(),
+  });
+
   const nativeRegister = useMutation(
-    async ( values: {
+    async (values: {
       firstName: string, lastName: string, email: string, password: string
     }) => {
       const user = await registerUser(
@@ -39,6 +48,15 @@ const SignUpScreen = () => {
         login(user);
         navigation.goBack();
       }
+    })
+
+  const facebookRegister = useMutation(async () => {
+      const response = await fbPromptAsync();
+      console.log(response.type)
+      if (response.type === "success") {
+        const { access_token } = response.params;
+        console.log(access_token);
+      } 
   })
 
   if (nativeRegister.isLoading) return <Loading />
@@ -167,16 +185,17 @@ const SignUpScreen = () => {
                   <GoogleButton
                     text="Sign up with Google"
                     style={styles.button}
-                    onPress={async () => {}}
+                    onPress={async () => { }}
                   />
                   <FacebookButton
                     text="Sign up with Facebook"
                     style={styles.button}
-                    onPress={async () => {}}
+                    onPress={() => facebookRegister.mutate()
+                    }
                   />
                   <AppleButton
                     type="sign-up"
-                    onPress={async () => {}}
+                    onPress={async () => { }}
                   />
                 </>
               );
