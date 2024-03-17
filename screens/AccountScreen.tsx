@@ -1,3 +1,4 @@
+import React,{useContext} from "react";
 import { ScrollView, View, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Text, Button } from "@ui-kitten/components";
@@ -7,16 +8,14 @@ import { SignUpAndSignInButtons } from "../components/SignUpAndSignInButtons";
 import { theme } from "../theme";
 import { ButtonList } from "../components/ButtonList";
 import { useUser } from "../hooks/useUser";
+import { AuthContext } from "../context";
+import { useAuth } from "../hooks/useAuth";
 
 const AccountScreen = () => {
-  // const user = {
-  //   firstName: "danh",
-  //   email: "danhnc1302@gmail.com"
-  // };
-  const user = undefined;
-  const logout = () => {
 
-  };
+  const { user } = useContext(AuthContext);
+  const { logout } = useAuth();
+  
   const navigation = useNavigation();
 
   const firstSignedOutButtons = [

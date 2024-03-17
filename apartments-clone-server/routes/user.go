@@ -102,16 +102,16 @@ func returnUser(user models.User, ctx iris.Context) {
 	// 	return
 	// }
 
-	// ctx.JSON(iris.Map{
-	// 	"ID":                  user.ID,
-	// 	"firstName":           user.FirstName,
-	// 	"lastName":            user.LastName,
-	// 	"email":               user.Email,
-	// 	"savedProperties":     user.SavedProperties,
-	// 	"allowsNotifications": user.AllowsNotifications,
-	// 	"accessToken":         string(tokenPair.AccessToken),
-	// 	"refreshToken":        string(tokenPair.RefreshToken),
-	// })
+	ctx.JSON(iris.Map{
+		"ID":                  user.ID,
+		"firstName":           user.FirstName,
+		"lastName":            user.LastName,
+		"email":               user.Email,
+		// "savedProperties":     user.SavedProperties,
+		// "allowsNotifications": user.AllowsNotifications,
+		// "accessToken":         string(tokenPair.AccessToken),
+		// "refreshToken":        string(tokenPair.RefreshToken),
+	})
 
 }
 

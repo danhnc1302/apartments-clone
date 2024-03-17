@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -16,9 +16,11 @@ import { SignUpAndSignInButtons } from "../components/SignUpAndSignInButtons";
 import { Card } from "../components/Card";
 import { properties } from "../data/properties";
 
+import { AuthContext } from '../context';
+
 const SavedScreen = () => {
 
-  const user = false;
+  const { user } = useContext(AuthContext);
   const likedProperties = undefined;
   const contactedProperties = undefined;
   const applicationsProperties = undefined;

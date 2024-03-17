@@ -1,8 +1,11 @@
+import React, {useContext} from "react";
 import { View, StyleSheet } from "react-native";
 import { Input, Button, Text } from "@ui-kitten/components";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useMutation } from "react-query";
+import { useNavigation } from "@react-navigation/native";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
@@ -11,9 +14,35 @@ import { FacebookButton } from "../components/FacebookButton";
 import { AppleButton } from "../components/AppleButton";
 import { OrDivider } from "../components/OrDivider";
 import { PasswordInput } from "../components/PasswordInput";
+import { Loading } from "../components/Loading";
+
+import { useAuth } from "../hooks/useAuth";
+import { AuthContext } from "../context";
+import { registerUser } from "../services/user";
 
 const SignUpScreen = () => {
   
+  const navigation = useNavigation();
+  const { login } = useAuth();
+
+  const nativeRegister = useMutation(
+    async ( values: {
+      firstName: string, lastName: string, email: string, password: string
+    }) => {
+      const user = await registerUser(
+        values.firstName,
+        values.lastName,
+        values.email,
+        values.password
+      );
+      if (user) {
+        login(user);
+        navigation.goBack();
+      }
+  })
+
+  if (nativeRegister.isLoading) return <Loading />
+
   return (
     <KeyboardAwareScrollView bounces={false}>
       <Screen>
@@ -42,6 +71,7 @@ const SignUpScreen = () => {
                 ),
             })}
             onSubmit={async (values) => {
+              nativeRegister.mutate(values);
             }}
           >
             {({
