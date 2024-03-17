@@ -1,13 +1,19 @@
 import React, { useContext } from "react";
-import { View, StyleSheet, Linking } from "react-native";
+import { View, StyleSheet, Platform } from "react-native";
+import * as Linking from 'expo-linking';
 import { Input, Button, Text } from "@ui-kitten/components";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useMutation } from "react-query";
 import { useNavigation } from "@react-navigation/native";
-import * as Facebook from "expo-auth-session/providers/facebook";
-
+import {
+  useAuthRequest,
+  makeRedirectUri,
+  AuthRequestConfig,
+  DiscoveryDocument,
+  
+} from 'expo-auth-session'
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
 import { GoogleButton } from "../components/GoogleButton";
@@ -21,18 +27,45 @@ import { useAuth } from "../hooks/useAuth";
 import { AuthContext } from "../context";
 import { registerUser } from "../services/user";
 import { handleError } from "../utils/handleErrors";
+import { maybeCompleteAuthSession } from 'expo-web-browser';
+
+import Constants from 'expo-constants';
+maybeCompleteAuthSession();
+
+const useProxy = Constants.appOwnership === 'expo' && false;
 
 const SignUpScreen = () => {
 
   const navigation = useNavigation();
   const { login } = useAuth();
 
-  const [___, ____, fbPromptAsync] = Facebook.useAuthRequest({
-    clientId: "1136500530862081",
-    // redirectUri: 'https://auth.expo.io/@danhdevapp/apartments-clone',
-    // redirectUri: 'exp://172.16.1.24:8081',
-    redirectUri: Linking.makeUrl(),
-  });
+  console.log(
+    makeRedirectUri({
+      native: 'fb1136500530862081://authorize',
+      useProxy,
+    })
+  );
+
+  const config: AuthRequestConfig = {
+    clientId: '1136500530862081',
+    scopes: ['public_profile', ],
+    redirectUri: makeRedirectUri({
+      native: 'fb1136500530862081://authorize',
+      useProxy
+    }),
+    
+    extraParams: {
+      display: Platform.select({ web: 'popup' })!
+    }
+  }
+
+  const discovery: DiscoveryDocument = {
+    authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
+    tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token'
+  }
+
+  const [request, response, promptAsync] = useAuthRequest(config, discovery)
+
 
   const nativeRegister = useMutation(
     async (values: {
@@ -50,14 +83,19 @@ const SignUpScreen = () => {
       }
     })
 
-  const facebookRegister = useMutation(async () => {
-      const response = await fbPromptAsync();
-      console.log(response.type)
-      if (response.type === "success") {
-        const { access_token } = response.params;
-        console.log(access_token);
-      } 
-  })
+    const facebookRegister = useMutation(async () => {
+      try {
+          const response = await promptAsync({ useProxy });
+          console.log("Facebook Response:", response);
+          if (response.type === "success") {
+              const { access_token } = response.params;
+              console.log("Access Token:", access_token);
+          } 
+      } catch (error) {
+          console.error("Facebook Auth Error:", error);
+      }
+  });
+  
 
   if (nativeRegister.isLoading) return <Loading />
 
