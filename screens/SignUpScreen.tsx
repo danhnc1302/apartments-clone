@@ -1,19 +1,13 @@
 import React, { useContext } from "react";
-import { View, StyleSheet, Platform } from "react-native";
-import * as Linking from 'expo-linking';
+import { View, StyleSheet, Platform, Linking } from "react-native";
+// import * as Linking from 'expo-linking';
 import { Input, Button, Text } from "@ui-kitten/components";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useMutation } from "react-query";
 import { useNavigation } from "@react-navigation/native";
-import {
-  useAuthRequest,
-  makeRedirectUri,
-  AuthRequestConfig,
-  DiscoveryDocument,
-  
-} from 'expo-auth-session'
+import * as Facebook from "expo-auth-session/providers/facebook";
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
 import { GoogleButton } from "../components/GoogleButton";
@@ -22,50 +16,44 @@ import { AppleButton } from "../components/AppleButton";
 import { OrDivider } from "../components/OrDivider";
 import { PasswordInput } from "../components/PasswordInput";
 import { Loading } from "../components/Loading";
-
 import { useAuth } from "../hooks/useAuth";
 import { AuthContext } from "../context";
 import { registerUser } from "../services/user";
-import { handleError } from "../utils/handleErrors";
 import { maybeCompleteAuthSession } from 'expo-web-browser';
+import { 
+  AuthRequestPromptOptions, 
+  useAuthRequest, 
+  DiscoveryDocument,
+  AuthRequestConfig,
+  makeRedirectUri
+} from "expo-auth-session";
 
-import Constants from 'expo-constants';
-maybeCompleteAuthSession();
+const proxyOptions: AuthRequestPromptOptions = {
+  useProxy: true,
+  // url: "https://auth.expo.io/@danhdevapp/apartments-clone",
+  projectNameForProxy: "@danhdevapp/apartments-clone"
+};
 
-const useProxy = Constants.appOwnership === 'expo' && false;
+const discovery: DiscoveryDocument = {
+  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
+  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token'
+}
+
+const config: AuthRequestConfig = {
+  clientId: '1136500530862081',
+  scopes: ['public_profile', 'user_likes'],
+  redirectUri: "https://auth.expo.io/@danhdevapp/apartments-clone",
+  extraParams: {
+    display: Platform.select({ web: 'popup' })!
+  }
+}
 
 const SignUpScreen = () => {
 
   const navigation = useNavigation();
   const { login } = useAuth();
 
-  console.log(
-    makeRedirectUri({
-      native: 'fb1136500530862081://authorize',
-      useProxy,
-    })
-  );
-
-  const config: AuthRequestConfig = {
-    clientId: '1136500530862081',
-    scopes: ['public_profile', ],
-    redirectUri: makeRedirectUri({
-      native: 'fb1136500530862081://authorize',
-      useProxy
-    }),
-    
-    extraParams: {
-      display: Platform.select({ web: 'popup' })!
-    }
-  }
-
-  const discovery: DiscoveryDocument = {
-    authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
-    tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token'
-  }
-
   const [request, response, promptAsync] = useAuthRequest(config, discovery)
-
 
   const nativeRegister = useMutation(
     async (values: {
@@ -85,10 +73,10 @@ const SignUpScreen = () => {
 
     const facebookRegister = useMutation(async () => {
       try {
-          const response = await promptAsync({ useProxy });
+          const response = await promptAsync(proxyOptions);
           console.log("Facebook Response:", response);
           if (response.type === "success") {
-              const { access_token } = response.params;
+              const access_token = response.params.code;
               console.log("Access Token:", access_token);
           } 
       } catch (error) {

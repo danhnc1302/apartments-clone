@@ -2,7 +2,8 @@
   "expo": {
     "name": "apartments-clone",
     "slug": "apartments-clone",
-    "scheme": "com.danhdevapp.apartments-clone",
+    "scheme": ["com.danhdevapp.apartments-clone","fb1136500530862081"],
+    "projectNameForProxy": "@danhdevapp/apartments-clone",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,6 +16,7 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+   
     "ios": {
       "supportsTablet": true
     },
@@ -42,5 +44,3 @@
     ]
   }
 }
-
-
