@@ -11,6 +11,7 @@ import (
 func main() {
 	godotenv.Load()
 	storage.InitializeDB()
+
 	app := iris.Default()
 	app.Validator = validator.New()
 	location := app.Party("api/location")
@@ -23,6 +24,8 @@ func main() {
 	{
 		user.Post("/register", routes.Register)
 		user.Post("/login", routes.Login)
+		user.Post("/facebook", routes.FacebookLoginOrSignUp)
+
 	}
 
 	app.Listen(":4000")

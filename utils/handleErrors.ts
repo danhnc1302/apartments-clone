@@ -3,6 +3,7 @@ import axios from "axios";
 import { ErrorRes } from "../types/error";
 
 export const handleError = (error: unknown) => {
+    console.log(error)
     if (axios.isAxiosError(error)) {
         if (error.response) {
             return alert((error.response.data as ErrorRes).detail);

@@ -19,8 +19,7 @@ export const registerUser = async (
             email,
             password
         });
-
-        console.log(data)
+        
         if (data) return data;
         return null;
     } catch (error) {
@@ -44,3 +43,15 @@ export const loginUser = async (
         handleError(error);
     }
 }
+
+export const facebookLoginOrRegister = async (accessToken: string) => {
+    try {
+        console.log("Endpoint: ", endpoints.facebook)
+      const { data }: DataRes = await axios.post(endpoints.facebook, {
+        accessToken,
+      });
+      return data;
+    } catch (error) {
+      handleError(error);
+    }
+  };

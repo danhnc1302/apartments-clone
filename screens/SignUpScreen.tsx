@@ -16,7 +16,7 @@ import { OrDivider } from "../components/OrDivider";
 import { PasswordInput } from "../components/PasswordInput";
 import { Loading } from "../components/Loading";
 import { useAuth } from "../hooks/useAuth";
-import { registerUser } from "../services/user";
+import { registerUser, facebookLoginOrRegister } from "../services/user";
 import { AuthRequestPromptOptions } from "expo-auth-session";
 
 import * as Facebook from "expo-auth-session/providers/facebook";
@@ -58,6 +58,7 @@ const SignUpScreen = () => {
     async (values: {
       firstName: string, lastName: string, email: string, password: string
     }) => {
+      console.log(values.firstName, values.lastName)
       const user = await registerUser(
         values.firstName,
         values.lastName,
@@ -75,7 +76,13 @@ const SignUpScreen = () => {
       const response = await fbPromptAsync(proxyOptions);
       if (response.type === "success") {
         const { access_token } = response.params;
-        console.log("Access Token:", access_token);
+        console.log("access_token: ", access_token);
+        const user = await facebookLoginOrRegister(access_token);
+        console.log("user:",user)
+        if (user) {
+          login(user);
+          navigation.goBack();
+        }
       }
     } catch (error) {
       console.error("Facebook Auth Error:", error);
@@ -83,7 +90,7 @@ const SignUpScreen = () => {
   });
 
 
-  if (nativeRegister.isLoading) return <Loading />
+  if (nativeRegister.isLoading || facebookRegister.isLoading) return <Loading />
 
   return (
     <KeyboardAwareScrollView bounces={false}>
