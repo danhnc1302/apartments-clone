@@ -55,3 +55,15 @@ export const facebookLoginOrRegister = async (accessToken: string) => {
       handleError(error);
     }
   };
+
+  export const googleLoginOrRegister = async (accessToken: string) => {
+    try {
+        console.log("Endpoint: ", endpoints.google)
+      const { data }: DataRes = await axios.post(endpoints.google, {
+        accessToken,
+      });
+      return data;
+    } catch (error) {
+      handleError(error);
+    }
+  };

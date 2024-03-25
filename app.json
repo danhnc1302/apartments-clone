@@ -2,7 +2,10 @@
   "expo": {
     "name": "apartments-clone",
     "slug": "apartments-clone",
-    "scheme": ["com.danhdevapp.apartments-clone","fb1136500530862081"],
+    "scheme": [
+      "com.danhdevapp.apartments-clone",
+      "fb1136500530862081"
+    ],
     "projectNameForProxy": "@danhdevapp/apartments-clone",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,9 +19,9 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-   
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.danhdevapp.apartments-clone"
     },
     "android": {
       "adaptiveIcon": {
@@ -41,6 +44,11 @@
           "locationAlwaysAndWhenInUsePermission": "Allow DanhNguyen to use your location."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "e8042eb2-d683-42b9-93a9-5d2a8026dd3b"
+      }
+    }
   }
 }

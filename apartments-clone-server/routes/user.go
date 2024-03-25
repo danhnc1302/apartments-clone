@@ -11,7 +11,6 @@ import (
 	"log"
 	"encoding/json"
 	"net/http"
-	"fmt"
 )
 
 func Register(ctx iris.Context) {
@@ -117,11 +116,68 @@ func returnUser(user models.User, ctx iris.Context) {
 
 }
 
+func GoogleLoginOrSignUp(ctx iris.Context) {
+	var userInput FacebookOrGoogleUserInput
+	err := ctx.ReadJSON(&userInput)
+	if err != nil {
+		utils.HandleValidationErrors(err, ctx)
+		return
+	}
+
+	endpoint := "https://www.googleapis.com/userinfo/v2/me"
+
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", endpoint, nil)
+	header := "Bearer " + userInput.AccessToken
+	req.Header.Set("Authorization", header)
+	res, googleErr := client.Do(req)
+	if googleErr != nil {
+		utils.CreateInternalServerError(ctx)
+		return
+	}
+
+	defer res.Body.Close()
+	body, bodyErr := ioutil.ReadAll(res.Body)
+	if bodyErr != nil {
+		log.Panic(bodyErr)
+		utils.CreateInternalServerError(ctx)
+		return
+	}
+
+	var googleBody GoogleUserRes
+	json.Unmarshal(body, &googleBody)
+
+	if googleBody.Email != "" {
+		var user models.User
+		userExists, userExistsErr := getAndHandleUserExists(&user, googleBody.Email)
+
+		if userExistsErr != nil {
+			utils.CreateInternalServerError(ctx)
+			return
+		}
+
+		if userExists == false {
+			user = models.User{FirstName: googleBody.GivenName, LastName: googleBody.FamilyName, Email: googleBody.Email, SocialLogin: true, SocialProvider: "Google"}
+			storage.DB.Create(&user)
+
+			returnUser(user, ctx)
+			return
+		}
+
+		if user.SocialLogin == true && user.SocialProvider == "Google" {
+			returnUser(user, ctx)
+			return
+		}
+
+		utils.CreateEmailAlreadyRegistered(ctx)
+		return
+
+	}
+}
+
 
 func FacebookLoginOrSignUp(ctx iris.Context) {
-	var userInput FacebookUserInput
-
-	fmt.Println("Access Token:", userInput.AccessToken)
+	var userInput FacebookOrGoogleUserInput
 
 	err := ctx.ReadJSON(&userInput)
 	if err != nil {
@@ -131,6 +187,7 @@ func FacebookLoginOrSignUp(ctx iris.Context) {
 	endpoint := "https://graph.facebook.com/me?fields=id,name,email&access_token=" + userInput.AccessToken
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", endpoint, nil)
+	
 	res, facebookErr := client.Do(req)
 	if facebookErr != nil {
 		utils.CreateInternalServerError(ctx)
@@ -202,23 +259,31 @@ func getAndHandleUserExists(user *models.User, email string) (exists bool, err e
 }
 
 type RegisterUserInput struct {
-	FirstName string `json:"firstName" validate:"required,max=256"`
-	LastName  string `json:"lastName" validate:"required,max=256"`
-	Email     string `json:"email" validate:"required,max=256,email"`
-	Password  string `json:"password" validate:"required,min=8,max=256"`
+	FirstName 		string `json:"firstName" validate:"required,max=256"`
+	LastName  		string `json:"lastName" validate:"required,max=256"`
+	Email     		string `json:"email" validate:"required,max=256,email"`
+	Password  		string `json:"password" validate:"required,min=8,max=256"`
 }
 
 type LoginUserInput struct {
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required"`
+	Email    		string `json:"email" validate:"required,email"`
+	Password 		string `json:"password" validate:"required"`
 }
 
-type FacebookUserInput struct {
-	AccessToken string `json:"accessToken" validate:"required"`
+type FacebookOrGoogleUserInput struct {
+	AccessToken 	string `json:"accessToken" validate:"required"`
 }
 
 type FacebookUserRes struct {
-	ID 		string `json:"id"`
-	Name 	string `json:"name"`
-	Email 	string `json:"email"`
+	ID 				string `json:"id"`
+	Name 			string `json:"name"`
+	Email 			string `json:"email"`
+}
+
+type GoogleUserRes struct {
+	ID				string `json:"id"`
+	Email			string `json:"email"`
+	Name			string `json:"name"`
+	GivenName		string `json:"given_name"`
+	FamilyName		string `json:"family_name"`
 }

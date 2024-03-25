@@ -9,12 +9,11 @@ import { theme } from "../theme";
 import { ButtonList } from "../components/ButtonList";
 import { useUser } from "../hooks/useUser";
 import { AuthContext } from "../context";
-import { useAuth } from "../hooks/useAuth";
 
 const AccountScreen = () => {
 
   const { user } = useContext(AuthContext);
-  const { logout } = useAuth();
+  const { logout } = useUser();
   
   const navigation = useNavigation();
 

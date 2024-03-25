@@ -1,5 +1,5 @@
 import { Dimensions, Platform, StatusBar } from "react-native";
-
+import { AuthRequestPromptOptions } from "expo-auth-session";
 export const LISTMARGIN = 10;
 export const WIDTH = Dimensions.get("screen").width - LISTMARGIN * 2;
 
@@ -13,7 +13,7 @@ androidHeight += androidNotch;
 
 export const HEADERHEIGHT = Platform.OS === "ios" ? iosHeight : androidHeight;
 
-const serverUrl = "http://192.168.1.6:4000/api";
+const serverUrl = "http://192.168.1.7:4000/api";
 const location = "/location";
 const user = "/user";
 const locationEndpoint = serverUrl + location;
@@ -25,7 +25,11 @@ export const endpoints = {
     register: userEndpoint + "/register",
     login: userEndpoint + "/login",
     facebook: userEndpoint + "/facebook",
-
+    google: userEndpoint + "/google"
 }
 
 
+export const proxyOptions: AuthRequestPromptOptions = {
+    useProxy: true,
+    projectNameForProxy: "@danhdevapp/apartments-clone"
+  };

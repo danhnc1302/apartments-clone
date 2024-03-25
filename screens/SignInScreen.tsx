@@ -12,25 +12,12 @@ import { FacebookButton } from "../components/FacebookButton";
 import { AppleButton } from "../components/AppleButton";
 import { PasswordInput } from "../components/PasswordInput";
 import { OrDivider } from "../components/OrDivider";
-import { Loading } from "../components/Loading";
-
 import { useAuth } from "../hooks/useAuth";
-import { useMutation } from "react-query";
-import { loginUser } from "../services/user"
+import { proxyOptions } from "../constants";
 
 const SignInScreen = () => {
   const navigation = useNavigation();
-  const { login } = useAuth();
-
-  const nativeLogin =  useMutation(async (values: { email: string, password: string}) => {
-    const user = await loginUser(values.email, values.password);
-    if(user) {
-      login(user);
-      navigation.goBack();
-    };
-  })
-
-  if (nativeLogin.isLoading) return <Loading />
+  const { nativeLogin, facebookAuth, googleAuth } = useAuth();
 
   return (
     <KeyboardAwareScrollView bounces={false}>
@@ -117,12 +104,12 @@ const SignInScreen = () => {
                   <GoogleButton
                     text="Continue with Google"
                     style={styles.button}
-                    onPress={async () => { }}
+                    onPress={async () => await googleAuth(proxyOptions)}
                   />
                   <FacebookButton
                     text="Continue with Facebook"
                     style={styles.button}
-                    onPress={async () => { }}
+                    onPress={async () => await facebookAuth(proxyOptions)}
                   />
                   <AppleButton
                     type="sign-in"

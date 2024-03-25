@@ -1,12 +1,9 @@
 import React, { useContext } from "react";
 import { View, StyleSheet } from "react-native";
-// import * as Linking from 'expo-linking';
 import { Input, Button, Text } from "@ui-kitten/components";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useMutation } from "react-query";
-import { useNavigation } from "@react-navigation/native";
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
 import { GoogleButton } from "../components/GoogleButton";
@@ -14,13 +11,8 @@ import { FacebookButton } from "../components/FacebookButton";
 import { AppleButton } from "../components/AppleButton";
 import { OrDivider } from "../components/OrDivider";
 import { PasswordInput } from "../components/PasswordInput";
-import { Loading } from "../components/Loading";
 import { useAuth } from "../hooks/useAuth";
-import { registerUser, facebookLoginOrRegister } from "../services/user";
-import { AuthRequestPromptOptions } from "expo-auth-session";
-
-import * as Facebook from "expo-auth-session/providers/facebook";
-
+import { proxyOptions } from "../constants";
 
 //********************************************************************************** */
 // const discovery: DiscoveryDocument = {
@@ -39,58 +31,9 @@ import * as Facebook from "expo-auth-session/providers/facebook";
 // const [request, response, promptAsync] = useAuthRequest(config, discovery)
 //********************************************************************************** */
 
-const proxyOptions: AuthRequestPromptOptions = {
-  useProxy: true,
-  projectNameForProxy: "@danhdevapp/apartments-clone"
-};
-
 const SignUpScreen = () => {
 
-  const navigation = useNavigation();
-  const { login } = useAuth();
-
-  const [___, ____, fbPromptAsync] = Facebook.useAuthRequest({
-    clientId: '1136500530862081',
-    redirectUri: "https://auth.expo.io/@danhdevapp/apartments-clone",
-  });
-
-  const nativeRegister = useMutation(
-    async (values: {
-      firstName: string, lastName: string, email: string, password: string
-    }) => {
-      console.log(values.firstName, values.lastName)
-      const user = await registerUser(
-        values.firstName,
-        values.lastName,
-        values.email,
-        values.password
-      );
-      if (user) {
-        login(user);
-        navigation.goBack();
-      }
-    })
-
-  const facebookRegister = useMutation(async () => {
-    try {
-      const response = await fbPromptAsync(proxyOptions);
-      if (response.type === "success") {
-        const { access_token } = response.params;
-        console.log("access_token: ", access_token);
-        const user = await facebookLoginOrRegister(access_token);
-        console.log("user:",user)
-        if (user) {
-          login(user);
-          navigation.goBack();
-        }
-      }
-    } catch (error) {
-      console.error("Facebook Auth Error:", error);
-    }
-  });
-
-
-  if (nativeRegister.isLoading || facebookRegister.isLoading) return <Loading />
+  const { nativeRegister, facebookAuth, googleAuth } = useAuth();
 
   return (
     <KeyboardAwareScrollView bounces={false}>
@@ -216,13 +159,12 @@ const SignUpScreen = () => {
                   <GoogleButton
                     text="Sign up with Google"
                     style={styles.button}
-                    onPress={async () => { }}
+                    onPress={async () => await googleAuth(proxyOptions)}
                   />
                   <FacebookButton
                     text="Sign up with Facebook"
                     style={styles.button}
-                    onPress={() => facebookRegister.mutate()
-                    }
+                    onPress={async () => await facebookAuth(proxyOptions)}
                   />
                   <AppleButton
                     type="sign-up"
