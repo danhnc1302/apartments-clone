@@ -67,3 +67,15 @@ export const facebookLoginOrRegister = async (accessToken: string) => {
       handleError(error);
     }
   };
+
+  export const appleLoginOrRegister = async (identityToken: string) => {
+    try {
+      console.log("Endpoint: ", endpoints.apple)
+      const { data }: DataRes = await axios.post(endpoints.apple, {
+        identityToken,
+      });
+    return data;
+  } catch (error) {
+    handleError(error);
+  }
+  }

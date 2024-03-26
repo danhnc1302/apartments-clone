@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform, StyleSheet, ViewStyle } from "react-native";
+import { Platform, StyleSheet, View, ViewStyle } from "react-native";
 import * as AppleAuthentication from "expo-apple-authentication";
 
 export const AppleButton = ({
@@ -19,7 +19,7 @@ export const AppleButton = ({
           ? AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
           : AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP
       }
-      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
+      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
       cornerRadius={5}
       style={styles.button}
       onPress={onPress}

@@ -16,7 +16,6 @@ import {
 
 import { useLoading } from "./useLoading";
 import { useUser } from "./useUser";
-import { proxyOptions } from "../constants";
 
 export const useAuth = () => {
     const { user, setUser } = useContext(AuthContext);

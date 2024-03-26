@@ -14,6 +14,13 @@ import { PasswordInput } from "../components/PasswordInput";
 import { useAuth } from "../hooks/useAuth";
 import { proxyOptions } from "../constants";
 
+
+import * as AppleAuthentication from "expo-apple-authentication";
+import { useMutation } from "react-query";
+import { appleLoginOrRegister } from "../services/user";
+import { useUser } from "../hooks/useUser";
+import { useNavigation } from "@react-navigation/native";
+
 //********************************************************************************** */
 // const discovery: DiscoveryDocument = {
 //   authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
@@ -34,6 +41,25 @@ import { proxyOptions } from "../constants";
 const SignUpScreen = () => {
 
   const { nativeRegister, facebookAuth, googleAuth } = useAuth();
+
+  const navigation = useNavigation();
+  const { login } = useUser();
+  const appleRegister = useMutation( async () => {
+    const { identityToken } = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME
+      ]
+    })
+    if (identityToken) {
+      console.log("IdentityToken: ", identityToken);
+      const user = await appleLoginOrRegister(identityToken);
+      if (user) {
+        login(user);
+        navigation.goBack();
+      }
+    }
+  })
 
   return (
     <KeyboardAwareScrollView bounces={false}>
@@ -168,7 +194,7 @@ const SignUpScreen = () => {
                   />
                   <AppleButton
                     type="sign-up"
-                    onPress={async () => { }}
+                    onPress={async () => appleRegister.mutate()}
                   />
                 </>
               );

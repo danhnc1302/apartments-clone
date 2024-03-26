@@ -25,9 +25,9 @@ export const endpoints = {
     register: userEndpoint + "/register",
     login: userEndpoint + "/login",
     facebook: userEndpoint + "/facebook",
-    google: userEndpoint + "/google"
+    google: userEndpoint + "/google",
+    apple: userEndpoint + "/apple",
 }
-
 
 export const proxyOptions: AuthRequestPromptOptions = {
     useProxy: true,

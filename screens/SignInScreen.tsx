@@ -15,9 +15,32 @@ import { OrDivider } from "../components/OrDivider";
 import { useAuth } from "../hooks/useAuth";
 import { proxyOptions } from "../constants";
 
+import * as AppleAuthentication from "expo-apple-authentication";
+import { useMutation } from "react-query";
+import { appleLoginOrRegister } from "../services/user";
+import { useUser } from "../hooks/useUser";
+
 const SignInScreen = () => {
   const navigation = useNavigation();
   const { nativeLogin, facebookAuth, googleAuth } = useAuth();
+
+  const { login } = useUser();
+  const appleRegister = useMutation( async () => {
+    const { identityToken } = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME
+      ]
+    })
+    if (identityToken) {
+      console.log("IdentityToken: ", identityToken);
+      const user = await appleLoginOrRegister(identityToken);
+      if (user) {
+        login(user);
+        navigation.goBack();
+      }
+    }
+  })
 
   return (
     <KeyboardAwareScrollView bounces={false}>
