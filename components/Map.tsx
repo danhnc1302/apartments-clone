@@ -72,7 +72,7 @@ export const Map = ({
                 longitudeDelta: region?.longitudeDelta ? region.longitudeDelta : 0.4
             }
             setRegion(newRegion)
-        },600);
+        }, 600);
         setActiveIndex(index)
         navigation.setOptions({ tabBarStyle: { display: "none" } })
     }
@@ -119,7 +119,7 @@ export const Map = ({
                                 <MaterialCommunityIcons name="close" color={theme["color-primary-500"]} size={24} />
                             </TouchableOpacity>
                         )}
-                        <Card property={properties[activeIndex]} style={styles.card} />
+                        <Card property={properties[activeIndex]} style={styles.card} onPress={() => navigation.navigate("PropertyDetails", { propertyID: properties[activeIndex].ID })} />
                     </>
                 )
             }

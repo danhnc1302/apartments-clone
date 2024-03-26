@@ -3,6 +3,7 @@ import {
   View,
   StyleSheet,
   ViewStyle,
+  Pressable,
 } from "react-native";
 
 import { Property } from '../types/property';
@@ -24,10 +25,10 @@ export const Card = ({
 }) => {
 
   return (
-    <View style={[style, styles.container]}>
-      <ImageCarousel images={property.images} />
+    <Pressable onPress={onPress} style={[style, styles.container]}>
+      <ImageCarousel onImagePress={onPress} images={property.images} chevronsShown={true}/>
       <CardInformation property={property} />
-    </View>
+    </Pressable>
   )
 }
 

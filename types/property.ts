@@ -7,7 +7,6 @@ import { TempApartment } from "./tempApartment";
 export type Property = {
   ID: number;
   images: string[];
-  about: string;
   rentLow: number;
   tags: string[];
   pets: Pet[];
@@ -22,6 +21,7 @@ export type Property = {
   zip: number;
   lat: number;
   lng: number;
+  about: string;
   phoneNumber: string;
   website?: string;
   unitType: "single" | "multiple";
@@ -31,6 +31,7 @@ export type Property = {
   apartments: Apartment[];
   scores?: Score[];
   parkingFee?: number;
+  liked?: boolean;
 };
 
 export type CreateProperty = {

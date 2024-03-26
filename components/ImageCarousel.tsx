@@ -3,13 +3,28 @@ import {
   StyleSheet,
   Image,
   Pressable,
-  FlatList
+  FlatList,
+  ImageStyle,
+  View
 } from 'react-native';
+import { Text } from '@ui-kitten/components';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { WIDTH } from '../constants';
 
-export const ImageCarousel = ({ images }: { images: string[] }) => {
+export const ImageCarousel = ({
+  images,
+  onImagePress,
+  chevronsShown,
+  indexShown,
+  imageStyle,
+}: {
+  images: string[],
+  onImagePress?: () => void,
+  chevronsShown?: boolean,
+  indexShown?: boolean,
+  imageStyle?: ImageStyle
+}) => {
 
   const viewConfigRef = { viewAreaCoveragePercentThreshold: 95 }
   const flatListRef = useRef<FlatList | null>(null)
@@ -43,7 +58,7 @@ export const ImageCarousel = ({ images }: { images: string[] }) => {
       index: activeIndex + 1
     })
   }
-  
+
   return (
     <>
       <FlatList
@@ -56,19 +71,37 @@ export const ImageCarousel = ({ images }: { images: string[] }) => {
         viewabilityConfig={viewConfigRef}
         onViewableItemsChanged={onViewRef.current}
         renderItem={({ item, index }) =>
-          <Image
-            source={{ uri: item }}
-            style={styles.image}
-          />
+          <Pressable onPress={onImagePress}>
+            <Image
+              source={{ uri: item }}
+              style={[styles.image, imageStyle]}
+            />
+          </Pressable>
         }
         keyExtractor={(item) => item}
       />
-      <Pressable style={[styles.chevron, { left: 10 }]} onPress={handlePressLeft}>
-        <MaterialCommunityIcons name="chevron-left" size={46} color="white" />
-      </Pressable>
-      <Pressable style={[styles.chevron, { right: 10 }]} onPress={handlePressRight}>
-        <MaterialCommunityIcons name="chevron-right" size={46} color="white" />
-      </Pressable>
+      {
+        chevronsShown && (
+          <>
+            <Pressable style={[styles.chevron, { left: 10 }]} onPress={handlePressLeft}>
+              <MaterialCommunityIcons name="chevron-left" size={46} color="white" />
+            </Pressable>
+            <Pressable style={[styles.chevron, { right: 10 }]} onPress={handlePressRight}>
+              <MaterialCommunityIcons name="chevron-right" size={46} color="white" />
+            </Pressable>
+          </>
+        )
+      }
+      {
+        
+        indexShown && (
+            <View style={styles.index}>
+              <Text category={"c2"} style={styles.indexText}>
+                {activeIndex +1 } of {images.length} photos
+              </Text>
+            </View>
+          )
+      }
     </>
   )
 }
@@ -83,5 +116,17 @@ const styles = StyleSheet.create({
   chevron: {
     position: "absolute",
     top: 95,
+  },
+  index: {
+    position: "absolute",
+    top: 20,
+    left: 15,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    paddingVertical: 3,
+    paddingHorizontal: 10,
+    borderRadius: 30
+  },
+  indexText: {
+    color: "#fff"
   }
 })

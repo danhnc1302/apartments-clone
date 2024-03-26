@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import { Button, Text } from '@ui-kitten/components';
 import LottieView from 'lottie-react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import { theme } from '../theme';
 import { Property } from '../types/property';
@@ -14,13 +15,13 @@ import { Screen } from '../components/Screen';
 import { Row } from '../components/Row';
 import { SignUpAndSignInButtons } from "../components/SignUpAndSignInButtons";
 import { Card } from "../components/Card";
-import { properties } from "../data/properties";
 
 import { AuthContext } from '../context';
 
 const SavedScreen = () => {
 
   const { user } = useContext(AuthContext);
+  const navigation = useNavigation();
   const likedProperties = undefined;
   const contactedProperties = undefined;
   const applicationsProperties = undefined;
@@ -119,7 +120,9 @@ const SavedScreen = () => {
         showsVerticalScrollIndicator={false}
         data={properties}
         style={{ marginTop: 10 }}
-        renderItem={({ item, index }) => <Card property={item} style={styles.card} />}
+        renderItem={({ item, index }) => <Card property={item} style={styles.card} onPress={() => navigation.navigate("PropertyDetails", {
+          propertyID: item.ID
+        })}/>}
         keyExtractor={(item) => item.ID.toString()}
       />
     )
