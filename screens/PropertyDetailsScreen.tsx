@@ -10,7 +10,10 @@ import {
 import { Screen } from "../components/Screen";
 import { ImageCarousel } from "../components/ImageCarousel";
 import { PropertyHeaderSection } from "../components/PropertyDetailsSections/PropertyHeaderSection";
+import { PricingAndFLoorPlanSection } from "../components/PropertyDetailsSections/PricingAndFloorPlanSection";
+import { AboutSection } from "../components/PropertyDetailsSections/AboutSection";
 import { Divider } from '@ui-kitten/components';
+
 import {properties} from "../data/properties";
 import { theme } from '../theme';
 
@@ -36,6 +39,11 @@ const PropertyDetailsScreen = ({
             <View style={styles.contentContainer}>
               <PropertyHeaderSection property={item}/>
               <Divider style={styles.divider}/>
+              <PricingAndFLoorPlanSection property={item}/>
+              <Divider style={styles.divider}/>
+              <AboutSection property={item}/>
+              <Divider style={styles.divider}/>
+
             </View>
           </>
         )}
