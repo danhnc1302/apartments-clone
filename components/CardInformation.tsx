@@ -16,7 +16,7 @@ export const CardInformation = ({ property }: { property: Property }) => {
         <Text style={{ fontSize: 20, fontWeight: "500" }}>${property.rentLow.toLocaleString()} - {property.rentHigh.toLocaleString()}</Text>
         <MaterialCommunityIcons name="heart-outline" size={24} color={theme["color-primary-500"]} />
       </Row>
-      <Text>{property.bedRoomLow} - {property.bedRoomHigh} Beds</Text>
+      <Text>{property.bedroomLow === 0 ? "Studio" : property.bedroomLow} - {property.bedroomHigh} Beds</Text>
       <Text style={styles.defaultMarginTop}>{property.name}</Text>
       <Text>{property.street}</Text>
       <Text>{property.city}, {property.state} {property.zip}</Text>

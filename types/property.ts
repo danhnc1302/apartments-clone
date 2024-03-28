@@ -23,6 +23,7 @@ export type Property = {
   lng: number;
   about: string;
   phoneNumber: string;
+  callingCode: string;
   website?: string;
   unitType: "single" | "multiple";
   description?: string;

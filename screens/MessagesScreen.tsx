@@ -1,14 +1,23 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from "react";
+import { 
+  View,
+  Text,
+  StyleSheet } from "react-native";
+  
+export const MessagesScreen = ({
+  route,
+}: {
+  route: { params: { conversationID: number; recipientName: string } };
+}) => {
+  
 
-const MessagesScreen = () => {
   return (
-    <View>
+    <>
       <Text>MessagesScreen</Text>
-    </View>
-  )
-}
+    </>
+  );
+};
 
-export default MessagesScreen
-
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  
+});
