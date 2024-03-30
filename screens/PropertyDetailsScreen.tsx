@@ -13,6 +13,9 @@ import { PropertyHeaderSection } from "../components/PropertyDetailsSections/Pro
 import { PricingAndFLoorPlanSection } from "../components/PropertyDetailsSections/PricingAndFloorPlanSection";
 import { AboutSection } from "../components/PropertyDetailsSections/AboutSection";
 import { ContactSection } from "../components/PropertyDetailsSections/ContactSection";
+import { AmenitiesSection } from "../components/PropertyDetailsSections/AmenitiesSection";
+import { LeaseAndFeesSection } from "../components/PropertyDetailsSections/LeaseAndFeesSection";
+import { LocationSection } from "../components/PropertyDetailsSections/LocationSection";
 import { Divider } from '@ui-kitten/components';
 
 import {properties} from "../data/properties";
@@ -46,7 +49,12 @@ const PropertyDetailsScreen = ({
               <Divider style={styles.divider}/>
               <ContactSection property={item} />
               <Divider style={styles.divider}/>
-
+              <AmenitiesSection property={item} />
+              <Divider style={styles.divider}/>
+              <LeaseAndFeesSection property={item} />
+              <Divider style={styles.divider}/>
+              <LocationSection property={item} />
+              <Divider style={styles.divider}/>
             </View>
           </>
         )}

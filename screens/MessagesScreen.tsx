@@ -4,11 +4,7 @@ import {
   Text,
   StyleSheet } from "react-native";
   
-export const MessagesScreen = ({
-  route,
-}: {
-  route: { params: { conversationID: number; recipientName: string } };
-}) => {
+const MessagesScreen = () => {
   
 
   return (
@@ -17,6 +13,8 @@ export const MessagesScreen = ({
     </>
   );
 };
+
+export default MessagesScreen;
 
 const styles = StyleSheet.create({
   
