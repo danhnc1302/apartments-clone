@@ -97,6 +97,71 @@ func Login(ctx iris.Context) {
 	returnUser(existingUser, ctx)
 }
 
+func ForgotPassword(ctx iris.Context) {
+	var emailInput EmailRegistedInput
+	err := ctx.ReadJSON(&emailInput)
+	if err != nil {
+		utils.HandleValidationErrors(err, ctx)
+		return
+	}
+
+	var user models.User
+	userExists, userExistsErr := getAndHandleUserExists(&user, emailInput.Email)
+
+	if userExistsErr != nil {
+		utils.CreateInternalServerError(ctx)
+		return
+	}
+
+	if !userExists {
+		utils.CreateError(iris.StatusUnauthorized, "Credentials Error", "Invalid email.", ctx)
+		return
+	}
+
+	if userExists {
+		if user.SocialLogin {
+			utils.CreateError(iris.StatusUnauthorized, "Credentials Error", "Social Login Account", ctx)
+			return
+		}
+
+		link := "exp://192.168.30.24:19000/--/resetpassword/"
+		token, tokenErr := utils.CreateForgotPasswordToken(user.ID, user.Email)
+	fmt.Println("danh")
+
+		if tokenErr != nil {
+			utils.CreateInternalServerError(ctx)
+			return
+		}
+
+		link += token
+		subject := "Forgot Your Password?"
+
+		html := `
+		<p>It looks like you forgot your password. 
+		If you did, please click the link below to reset it. 
+		If you did not, disregard this email. Please update your password
+		within 10 minutes, otherwise you will have to repeat this
+		process. <a href=` + link + `>Click to Reset Password</a>
+		</p><br />`
+
+		emailSent, emailSentErr := utils.SendMail(user.Email, subject, html)
+		fmt.Println(emailSentErr)
+
+		if emailSentErr != nil {
+			utils.CreateInternalServerError(ctx)
+			return
+		}
+
+		if emailSent {
+			ctx.JSON(iris.Map{
+				"emailSent": true,
+			})
+			return
+		}
+
+		ctx.JSON(iris.Map{"emailSent": false})
+	}
+}
 
 
 func returnUser(user models.User, ctx iris.Context) {
@@ -357,3 +422,11 @@ type GoogleUserRes struct {
 	GivenName		string `json:"given_name"`
 	FamilyName		string `json:"family_name"`
 }
+
+type EmailRegistedInput struct {
+	Email string `json:"email" validate:"required"`
+}
+
+
+
+

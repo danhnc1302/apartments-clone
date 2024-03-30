@@ -20,6 +20,7 @@ import { Divider } from '@ui-kitten/components';
 
 import {properties} from "../data/properties";
 import { theme } from '../theme';
+import { ReviewSection } from '../components/PropertyDetailsSections/ReviewSection';
 
 const PropertyDetailsScreen = ({
   route,
@@ -54,6 +55,8 @@ const PropertyDetailsScreen = ({
               <LeaseAndFeesSection property={item} />
               <Divider style={styles.divider}/>
               <LocationSection property={item} />
+              <Divider style={styles.divider}/>
+              <ReviewSection property={item} />
               <Divider style={styles.divider}/>
             </View>
           </>

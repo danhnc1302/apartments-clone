@@ -1,7 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const ReviewScreen = () => {
+const ReviewScreen = ({
+  route
+}:{
+  route: { params: {
+    propertyID: number,
+    propertyName: string[],
+  } }
+}) => {
   return (
     <View>
       <Text>ReviewScreen</Text>
