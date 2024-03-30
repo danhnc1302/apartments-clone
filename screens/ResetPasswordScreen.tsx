@@ -1,20 +1,44 @@
 import { View, StyleSheet } from "react-native";
-import { Input, Button, Text } from "@ui-kitten/components";
+import { Button, Text } from "@ui-kitten/components";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
-import { GoogleButton } from "../components/GoogleButton";
-import { FacebookButton } from "../components/FacebookButton";
-import { AppleButton } from "../components/AppleButton";
-import { OrDivider } from "../components/OrDivider";
 import { PasswordInput } from "../components/PasswordInput";
 import { useNavigation } from "@react-navigation/native";
+import { Loading } from "../components/Loading";
+import { endpoints } from "../constants";
+import { useMutation } from "react-query";
+import axios from "axios";
 
-const ResetPasswordScreen = () => {
+const ResetPasswordScreen = ({
+  route
+}:{
+  route: { params: { token: string } }
+}) => {
   const navigation = useNavigation()
+
+  const resetPassword = useMutation(
+    async (password:string) => {
+      return axios.post(endpoints.resetPassword, {password}, {
+        headers: {
+          Authorization: `Bearer ${route.params.token}`
+        }
+      })
+  },
+    {
+      onSuccess() {
+        navigation.navigate("SignIn");
+      },
+      onError(error:any) {
+        if(error.response.status === 401)
+          return alert("Invalid or Expired Token");
+        alert("Unable to reset password!");
+      }
+    }
+  )
   return (
     <KeyboardAwareScrollView bounces={false}>
       <Screen>
@@ -41,10 +65,7 @@ const ResetPasswordScreen = () => {
                 .oneOf([yup.ref("password"), null], "Passwords don't match")
                 .required("Required"),
             })}
-            onSubmit={async (values) => {
-              console.log("Send the values to server: ", values)
-              navigation.navigate("SignIn")
-            }
+            onSubmit={async (values) => resetPassword.mutate(values.password)
             }
           >
             {({

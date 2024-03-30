@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"fmt"
 	"github.com/MicahParks/keyfunc"
+	jsonWT "github.com/kataras/iris/v12/middleware/jwt"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -163,6 +164,29 @@ func ForgotPassword(ctx iris.Context) {
 	}
 }
 
+func ResetPassword(ctx iris.Context) {
+	var password ResetPasswordInput
+	err := ctx.ReadJSON(&password)
+	if err != nil {
+		utils.HandleValidationErrors(err, ctx)
+		return
+	}
+
+	hashedPassword, hashErr := hashAndSaltPassword(password.Password)
+	if hashErr != nil {
+		utils.CreateInternalServerError(ctx)
+		return
+	}
+
+	claims := jsonWT.Get(ctx).(*utils.ForgotPasswordToken)
+
+	var user models.User
+	storage.DB.Model(&user).Where("id = ?", claims.ID).Update("password", hashedPassword)
+
+	ctx.JSON(iris.Map{
+		"passwordReset": true,
+	})
+}
 
 func returnUser(user models.User, ctx iris.Context) {
 	// tokenPair, tokenErr := utils.CreateTokenPair(user.ID)
@@ -427,6 +451,6 @@ type EmailRegistedInput struct {
 	Email string `json:"email" validate:"required"`
 }
 
-
-
-
+type ResetPasswordInput struct {
+	Password string `json:"password" validate:"required,min=8,max=256"`
+}

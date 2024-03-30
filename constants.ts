@@ -13,7 +13,7 @@ androidHeight += androidNotch;
 
 export const HEADERHEIGHT = Platform.OS === "ios" ? iosHeight : androidHeight;
 
-const serverUrl = "http://172.16.0.153:4000/api";
+const serverUrl = "http://192.168.1.7:4000/api";
 const location = "/location";
 const user = "/user";
 const locationEndpoint = serverUrl + location;
@@ -28,6 +28,8 @@ export const endpoints = {
     google: userEndpoint + "/google",
     apple: userEndpoint + "/apple",
     forgotPassword: userEndpoint + "/forgotpassword",
+    resetPassword: userEndpoint + "/resetpassword",
+
 }
 
 export const proxyOptions: AuthRequestPromptOptions = {
