@@ -7,6 +7,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { Text } from "@ui-kitten/components";
 import { useUser } from "../hooks/useUser";
 import { SignUpOrSignInScreen } from "./SignUpOrSignInScreen";
+import { CreateManagerScreen } from "./CreateManagerScreen";
+
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
 
@@ -17,8 +19,10 @@ const AddPropertyScreen = ({
 }) => {
   
   const { user } = useUser();
+  const manager = false
 
   if (!user) return <SignUpOrSignInScreen />
+  if (!manager) return <CreateManagerScreen />
   
   return (
     <KeyboardAwareScrollView bounces={false}>
