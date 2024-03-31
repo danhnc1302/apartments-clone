@@ -14,7 +14,7 @@ import (
 func main() {
 	godotenv.Load()
 	storage.InitializeDB()
-
+	storage.InitializeS3()
 	app := iris.Default()
 	app.Validator = validator.New()
 
@@ -40,6 +40,13 @@ func main() {
 		user.Post("/forgotpassword", routes.ForgotPassword)
 		user.Post("/resetpassword", resetTokenVerifierMiddleware, routes.ResetPassword)
 		
+	}
+
+	manager := app.Party("api/manager")
+	{
+		manager.Post("/create", routes.CreateManager)
+		manager.Get("/userid/{id}", routes.GetManagersByUserId)
+
 	}
 
 	app.Listen(":4000")

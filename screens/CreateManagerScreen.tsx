@@ -6,7 +6,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import * as ImagePicker from "expo-image-picker";
 import RNPhoneInput from "react-native-phone-number-input";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import axios from "axios";
 
 import { Screen } from "../components/Screen";
@@ -24,6 +24,7 @@ export const CreateManagerScreen = ({
     const [imageURI, setImageURI] = useState("");
     const phoneRef = useRef<RNPhoneInput>(null);
     const { user } = useUser();
+ 
 
     const pickImage = async (
         setBase64Image: (field: string, value: any) => void,
@@ -50,8 +51,9 @@ export const CreateManagerScreen = ({
             website: string;
             image: string;
         }) => {
+            console.log(values.image)
             return axios.post(endpoints.createManager, {
-                userID: user?.ID,
+                userID: user?.ID.toString(),
                 name: values.name,
                 email: values.email,
                 phoneNumber: values.phoneNumber,
@@ -69,7 +71,7 @@ export const CreateManagerScreen = ({
         }
     );
 
-    if (createManager.isLoading) return <Loading />;
+   if(createManager.isLoading) return <Loading />
 
     return (
         <KeyboardAwareScrollView bounces={false}>
