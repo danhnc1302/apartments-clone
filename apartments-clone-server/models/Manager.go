@@ -10,4 +10,6 @@ type Manager struct{
 	Website			string `json:"website"`
 	UserID			string `json:"userID"`
 	Image			string `json:"image"`
+	User			User
+	Properties		[]Property
 }

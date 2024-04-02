@@ -13,14 +13,16 @@ androidHeight += androidNotch;
 
 export const HEADERHEIGHT = Platform.OS === "ios" ? iosHeight : androidHeight;
 
-const serverUrl = "http:/192.168.1.4:4000/api";
+const serverUrl = "http:/192.168.1.8:4000/api";
 const location = "/location";
 const user = "/user";
 const manager = "/manager";
+const property = "/property";
 
 const locationEndpoint = serverUrl + location;
 const userEndpoint = serverUrl + user;
 const managerEndpoint = serverUrl + manager;
+const propertyEndpoint = serverUrl + property;
 
 export const endpoints = {
     search: locationEndpoint + "/search",
@@ -33,7 +35,9 @@ export const endpoints = {
     forgotPassword: userEndpoint + "/forgotpassword",
     resetPassword: userEndpoint + "/resetpassword",
     createManager: managerEndpoint + "/create",
-    getManagersByUserId: managerEndpoint + "/userid/",
+    getManagerByUserId: managerEndpoint + "/userid/",
+    createProperty: managerEndpoint + "/create",
+    getPropertyByUserId: managerEndpoint + "/",
 
 }
 

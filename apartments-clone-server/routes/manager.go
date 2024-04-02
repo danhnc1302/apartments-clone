@@ -39,13 +39,18 @@ func CreateManager(ctx iris.Context) {
 	ctx.JSON(manager)
 }
 
-func GetManagersByUserId(ctx iris.Context) {
+func GetManagerByUserId(ctx iris.Context) {
 	params := ctx.Params()
 	id := params.Get("id")
 
-	var managers []models.Manager
-	storage.DB.Where("user_id = ?", id).Find(&managers)
-	ctx.JSON(iris.Map{"managers": managers})
+	var manager models.Manager
+	managerExists := storage.DB.Where("user_id = ?", id).Find(&manager)
+
+	if managerExists.RowsAffect == 0 {
+		utils.CreateError(iris.StatusNotFound, "Manager Not Found", "Manager Not Found", ctx)
+		return
+	}
+	ctx.JSON(manager)
 }
 
 type ManagerInput struct {

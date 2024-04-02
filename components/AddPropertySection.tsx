@@ -47,6 +47,7 @@ export const AddPropertySection = () => {
       bathrooms: PickerItem;
     }[];
   }) => {
+    console.log(values)
     if (user) {
       const obj: CreateProperty = {
         unitType: values.unitType,
@@ -133,35 +134,35 @@ const validationSchema = yup.object().shape({
     label: yup.string().required("Required"),
     value: yup.string().required("Required"),
   }),
-//   unit: yup.object().when("unitType", {
-//     is: "single",
-//     then: yup.object().shape({
-//       bedrooms: yup.object().shape({
-//         label: yup.string().required("Required"),
-//         value: yup.string().required("Required"),
-//       }),
-//       bathrooms: yup.object().shape({
-//         label: yup.string().required("Required"),
-//         value: yup.string().required("Required"),
-//       }),
-//     }),
-//   }),
-//   units: yup.array().when("unitType", {
-//     is: "multiple",
-//     then: yup.array(
-//       yup.object().shape({
-//         unit: yup.string().required("Required"),
-//         bedrooms: yup.object().shape({
-//           label: yup.string().required("Required"),
-//           value: yup.string().required("Required"),
-//         }),
-//         bathrooms: yup.object().shape({
-//           label: yup.string().required("Required"),
-//           value: yup.string().required("Required"),
-//         }),
-//       })
-//     ),
-//   }),
+  unit: yup.object().when("unitType", {
+    is: "single",
+    then: yup.object().shape({
+      bedrooms: yup.object().shape({
+        label: yup.string().required("Required"),
+        value: yup.string().required("Required"),
+      }),
+      bathrooms: yup.object().shape({
+        label: yup.string().required("Required"),
+        value: yup.string().required("Required"),
+      }),
+    }),
+  }),
+  units: yup.array().when("unitType", {
+    is: "multiple",
+    then: yup.array(
+      yup.object().shape({
+        unit: yup.string().required("Required"),
+        bedrooms: yup.object().shape({
+          label: yup.string().required("Required"),
+          value: yup.string().required("Required"),
+        }),
+        bathrooms: yup.object().shape({
+          label: yup.string().required("Required"),
+          value: yup.string().required("Required"),
+        }),
+      })
+    ),
+  }),
 });
 
   return (
@@ -217,7 +218,6 @@ const validationSchema = yup.object().shape({
 
                     handleGoBack();
                   };
-                  console.log("values.street:", values.street)
                   const currentLocation = values.street
                     ? values.state
                       ? `${values.street}, ${
@@ -258,7 +258,7 @@ const validationSchema = yup.object().shape({
                     );
                     setFieldValue("units", newUnits);
                   };
-                  console.log(currentLocation)
+
                   return (
                     <View>
                       <Row style={styles.row}>
