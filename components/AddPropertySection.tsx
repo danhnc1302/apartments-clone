@@ -7,7 +7,7 @@ import { useState } from "react";
 import { PickerItem } from "react-native-woodpicker";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as yup from "yup";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation } from "react-query";
 
 import { Screen } from "./Screen";
 import { Select } from "../components/Select";
@@ -23,19 +23,15 @@ import { useUser } from "../hooks/useUser";
 import { bathValues } from "../constants/bathValues"
 import { bedValues } from "../constants/bedValues"
 import { useNavigation } from "@react-navigation/native";
-import { Manager } from "../types/manager";
 import axios from "axios";
 import { endpoints } from "../constants";
 import { Property } from "../types/property";
 
 export const AddPropertySection = () => {
   const { user } = useUser();
-  const queryClient = useQueryClient();
   const navigation = useNavigation();
   const [searchingLocation, setSearchingLocation] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchLocation[]>([]);
-
-  const manager: { data: Manager } | undefined = queryClient.getQueryData("manager");
 
   const createProperty = useMutation(
     "property",
@@ -72,7 +68,7 @@ export const AddPropertySection = () => {
       bathrooms: PickerItem;
     }[];
   }) => {
-    if (manager) {
+    if (user) {
       const obj: CreateProperty = {
         unitType: values.unitType,
         propertyType: values.propertyType.value,
@@ -82,7 +78,7 @@ export const AddPropertySection = () => {
         zip: Number(values.zip),
         lat: Number(values.lat),
         lng: Number(values.lng),
-        managerID: manager.data.ID,
+        userID: user.ID,
         apartments: [],
       };
 
