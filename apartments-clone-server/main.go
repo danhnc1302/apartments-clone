@@ -51,8 +51,8 @@ func main() {
 
 	property := app.Party("api/property")
 	{
-		manager.Post("/create", routes.CreateProperty)
-		manager.Get("/{id}", routes.GetProperty)
+		property.Post("/create", routes.CreateProperty)
+		property.Get("/{id}", routes.GetProperty)
 
 	}
 

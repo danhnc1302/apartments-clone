@@ -46,7 +46,7 @@ func GetManagerByUserId(ctx iris.Context) {
 	var manager models.Manager
 	managerExists := storage.DB.Where("user_id = ?", id).Find(&manager)
 
-	if managerExists.RowsAffect == 0 {
+	if managerExists.RowsAffected == 0 {
 		utils.CreateError(iris.StatusNotFound, "Manager Not Found", "Manager Not Found", ctx)
 		return
 	}

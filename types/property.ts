@@ -44,13 +44,11 @@ export type CreateProperty = {
   zip: number;
   lat: number;
   lng: number;
-  userID: number;
+  managerID: number;
   apartments: {
     unit?: string;
     bedrooms: number;
     bathrooms: number;
-    active: boolean;
-    availableOn: Date;
   }[];
 };
 

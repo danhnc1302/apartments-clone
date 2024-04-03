@@ -1,4 +1,7 @@
 package models
+import (
+	"gorm.io/gorm"
+)
 
 type Property struct {
 	gorm.Model
@@ -14,6 +17,6 @@ type Property struct {
 	BedroomHigh       int            `json:"bedroomHigh"`  // calculate based off apartments
 	BathroomLow       float32        `json:"bathroomLow"`  // calculate based off apartments
 	BathroomHigh      float32        `json:"bathroomHigh"` // calculate based off apartments
-	ManagerId		  unit			 `json:"managerID"`
-	Apartment		  []Apartment	 `json"apartments"`
+	ManagerID		  uint			 `json:"managerID"`
+	Apartments		  []Apartment	 `json"apartments"`
 }
