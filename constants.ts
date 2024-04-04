@@ -13,10 +13,9 @@ androidHeight += androidNotch;
 
 export const HEADERHEIGHT = Platform.OS === "ios" ? iosHeight : androidHeight;
 
-const serverUrl = "http:/192.168.1.3:4000/api";
+const serverUrl = "http:/192.168.1.10:4000/api";
 const location = "/location";
 const user = "/user";
-const manager = "/manager";
 const property = "/property";
 
 const locationEndpoint = serverUrl + location;
@@ -35,7 +34,8 @@ export const endpoints = {
     resetPassword: userEndpoint + "/resetpassword",
     createProperty: propertyEndpoint + "/create",
     getPropertyByUserId: propertyEndpoint + "/",
-
+    getPropertiesByUserId: propertyEndpoint + "/userId/",
+    deletePeoperty: propertyEndpoint + "/",
 }
 
 export const proxyOptions: AuthRequestPromptOptions = {

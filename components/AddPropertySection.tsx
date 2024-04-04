@@ -43,7 +43,6 @@ export const AddPropertySection = () => {
         alert("Unable to create property!");
       },
       onSuccess(data: {data: Property}) {
-        console.log("data: ",data)
         navigation.navigate("EditProperty", {propertyID: data.data.ID});
       }
     }

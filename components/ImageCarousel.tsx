@@ -61,25 +61,35 @@ export const ImageCarousel = ({
 
   return (
     <>
-      <FlatList
-        ref={(ref) => (flatListRef.current = ref)}
-        data={images}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        snapToAlignment='center'
-        pagingEnabled
-        viewabilityConfig={viewConfigRef}
-        onViewableItemsChanged={onViewRef.current}
-        renderItem={({ item, index }) =>
-          <Pressable onPress={onImagePress}>
-            <Image
-              source={{ uri: item }}
-              style={[styles.image, imageStyle]}
-            />
-          </Pressable>
-        }
-        keyExtractor={(item) => item}
-      />
+      {
+        images && images.length > 0 ? (
+        <FlatList
+            ref={(ref) => (flatListRef.current = ref)}
+            data={images}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            snapToAlignment='center'
+            pagingEnabled
+            viewabilityConfig={viewConfigRef}
+            onViewableItemsChanged={onViewRef.current}
+            renderItem={({ item, index }) =>
+              <Pressable onPress={onImagePress}>
+                <Image
+                  source={{ uri: item }}
+                  style={[styles.image, imageStyle]}
+                />
+              </Pressable>
+            }
+            keyExtractor={(item) => item}
+          />
+        ) : (
+          <Image
+          source={require("../assets/NoImage.jpeg")}
+          style={[styles.image, imageStyle]}
+        />
+        )
+    }
+
       {
         chevronsShown && (
           <>
@@ -93,14 +103,14 @@ export const ImageCarousel = ({
         )
       }
       {
-        
+
         indexShown && (
-            <View style={styles.index}>
-              <Text category={"c2"} style={styles.indexText}>
-                {activeIndex +1 } of {images.length} photos
-              </Text>
-            </View>
-          )
+          <View style={styles.index}>
+            <Text category={"c2"} style={styles.indexText}>
+              {activeIndex + 1} of {images.length} photos
+            </Text>
+          </View>
+        )
       }
     </>
   )

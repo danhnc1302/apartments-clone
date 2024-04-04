@@ -33,6 +33,7 @@ export type Property = {
   scores?: Score[];
   parkingFee?: number;
   liked?: boolean;
+  onMarket?: boolean
 };
 
 export type CreateProperty = {
