@@ -69,9 +69,9 @@ func CreateProperty(ctx iris.Context) {
 func GetProperty(ctx iris.Context) {
 	params := ctx.Params()
 	id := params.Get("id")
-	fmt.Println(id)
+	fmt.Println("GetProperty: ",id)
 	var property models.Property
-	propertyExist := storage.DB.Preload("Property").Find(&property,id)
+	propertyExist := storage.DB.Preload("Apartments").Find(&property,id)
 
 	if propertyExist.Error != nil {
 		utils.CreateError(
@@ -91,6 +91,8 @@ func GetProperty(ctx iris.Context) {
 func GetPropertiesByUserID(ctx iris.Context) {
 	params := ctx.Params()
 	id := params.Get("id")
+	fmt.Println("GetPropertiesByID:",id)
+
 
 	var properties []models.Property
 	propertiesExist := storage.DB.Preload("Apartments").Where("user_id = ?", id).Find(&properties)
@@ -106,6 +108,7 @@ func GetPropertiesByUserID(ctx iris.Context) {
 func DeleteProperty(ctx iris.Context) {
 	params := ctx.Params()
 	id := params.Get("id")
+	fmt.Println("DeleteProperty:",id)
 
 	propertyDeleted := storage.DB.Delete(&models.Property{}, id)
 

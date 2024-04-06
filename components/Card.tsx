@@ -32,10 +32,11 @@ export const Card = ({
 
   const queryClient = useQueryClient();
   const navigation = useNavigation();
-  const [showModal, setShowModal] = useState<boolean>(true);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
+  console.log(property.ID)
 
   const deleteProperty = useMutation(
     () => axios.delete(`${endpoints.deletePeoperty}${property.ID}`),

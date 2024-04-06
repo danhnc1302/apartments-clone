@@ -17,6 +17,6 @@ type Property struct {
 	BedroomHigh       int            `json:"bedroomHigh"`  // calculate based off apartments
 	BathroomLow       float32        `json:"bathroomLow"`  // calculate based off apartments
 	BathroomHigh      float32        `json:"bathroomHigh"` // calculate based off apartments
-	UserID		  uint			 `json:"userID"`
-	Apartments		  []Apartment	 `json"apartments"`
+	UserID		  		uint		 `json:"userID"`
+	Apartments		  []Apartment	 `json:"apartments" gorm:"foreignKey:PropertyID"`
 }

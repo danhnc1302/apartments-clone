@@ -1,6 +1,9 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
-import { Text, Button } from "@ui-kitten/components";
+import {
+  StyleSheet,
+  View
+} from "react-native";
+import { Text, Button, Input } from "@ui-kitten/components";
 import axios from "axios";
 import {
   useQuery,
@@ -18,13 +21,32 @@ import * as yup from "yup";
 
 import { Loading } from "../components/Loading";
 import { Screen } from "../components/Screen";
-import {
-  endpoints,
-} from "../constants";
+import { UnitPhotosPicker } from "../components/UnitPhotosPicker";
+import { UnitAmenities } from "../components/UnitAmenities";
+import { UnitDescription } from "../components/UnitDescription";
+import { UnitsInput } from "../components/EditPropertySections/UnitsInput";
+import { GeneralPropertyInfo } from "../components/EditPropertySections/GeneralPropertyInfo";
+import { ContactInfo } from "../components/EditPropertySections/ContactInfo";
+import { UtilitiesAndAmenities } from "../components/UtilitiesAndAmenities";
+import { Row } from "../components/Row";
+import { Select } from "../components/Select";
+
 import { EditPropertyObj, Property } from "../types/property";
+import { theme } from "../theme";
+import { useUser } from "../hooks/useUser";
+
 import { bedValues } from "../constants/bedValues";
 import { bathValues } from "../constants/bathValues";
-import { theme } from "../theme";
+import { petValues } from "../constants/petValues";
+import { laundryValues } from "../constants/laundryValues";
+import {
+  AMENITIES_STR,
+  DESCRIPTION_STR,
+  endpoints,
+  PHOTOS_STR,
+  queryKeys,
+} from "../constants";
+import { TempApartment } from "../types/tempApartment";
 
 const EditPropertyScreen = ({
   route,
@@ -32,17 +54,134 @@ const EditPropertyScreen = ({
   route: { params: { propertyID: number } };
 }) => {
 
+  const scrollViewRef = useRef<KeyboardAwareScrollView | null>(null);
+  const phoneRef = useRef<RNPhoneInput>(null);
+  const [showAlternateScreen, setShowAlternateScreen] = useState("");
+  const [apartmentIndex, setApartmentIndex] = useState<number>(-1);
+  const { user } = useUser();
+
+  const handleShowAlternateScreen = (index: number, name: string) => {
+    if (scrollViewRef.current) scrollViewRef.current.scrollToPosition(0, 0);
+    setShowAlternateScreen(name);
+    setApartmentIndex(index);
+  };
+
+  const handleHideAlternateScreen = () => {
+    setShowAlternateScreen("");
+    setApartmentIndex(-1);
+  };
+
   const property: UseQueryResult<{ data: Property }, unknown> = useQuery(
     "property",
     () => axios.get(endpoints.getPropertyByUserId + route.params.propertyID)
   );
 
+  const propertyData = property.data?.data;
+
+  let initialApartments: TempApartment[] = [];
+  if (propertyData) {
+    for (let i of propertyData.apartments) {
+      initialApartments.push({
+        ID: i.ID,
+        unit: i.unit ? i.unit : "",
+        bedrooms: bedValues.filter((item) => item.value === i.bedrooms)[0],
+        bathrooms: bathValues.filter((item) => item.value === i.bathrooms)[0],
+        sqFt: i.sqFt ? i.sqFt.toString() : "",
+        rent: i.rent ? i.rent.toString() : "",
+        deposit: "0",
+        leaseLength: "12 Months",
+        availableOn: new Date(),
+        active: true,
+        showCalendar: false,
+        images: [],
+        amenities: [],
+        description: "",
+      });
+    }
+  }
+
   if (property.isFetching || property.isLoading) return <Loading />
 
   return (
-    <Screen>
-      <Text>Edit Property Screen</Text>
-      <Text>{JSON.stringify(property?.data?.data)}</Text>
+    <Screen >
+      <KeyboardAwareScrollView
+        bounces={false}
+        ref={(ref) => (scrollViewRef.current = ref)}
+        style={styles.container}
+      >
+        {!showAlternateScreen && (
+          <Text category="h5" style={styles.header}>
+            Basic Info
+          </Text>
+        )}
+        <View>
+          <Formik
+            initialValues={{
+              unitType: propertyData?.unitType,
+              apartments: initialApartments,
+            }}
+            validationSchema={validationSchema}
+            onSubmit={(values) => console.log(values)}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              handleSubmit,
+              setFieldTouched,
+              setFieldValue,
+              handleChange,
+            }) => {
+              return (
+                <>
+                  {
+                    values.apartments.map((i, index) => {
+                      return (
+                        <View>
+                          {
+                            values.apartments.length > 1 ? (
+                              <Input
+                                style={styles.input}
+                                value={i.unit}
+                                onChangeText={handleChange(`apartments[${index}].unit`)}
+                                label="Unit"
+                                placeholder="Unit No."
+                                onBlur={() => setFieldTouched(`apartments[${index}].unit`)}
+                                caption={
+                                  touched.apartments &&
+                                    errors.apartments &&
+                                    (errors.apartments[index] as any)?.unit ? (errors.apartments[index] as any)?.unit : undefined
+                                }
+                                status={
+                                  touched.apartments && errors.apartments && (errors.apartments[index] as any)?.unit ? "danger" : "basic"
+                                }
+                              >
+                              </Input>
+                            ) : null
+                          }
+                          <Row style={[styles.input, styles.unitRow]}>
+                            <Select
+                              label="Beds"
+                              item={i.bedrooms}
+                              items={bedValues}
+                              onItemChange={(item) => {
+                                setFieldValue(`apartments[${index}].bedrooms`,item)
+                              }}
+                              isNullable={false}
+                              style={styles.smallInput}
+                            />
+                          </Row>
+                        </View>
+                      )
+                    })
+                  }
+                </>
+              )
+            }
+            }
+          </Formik>
+        </View>
+      </KeyboardAwareScrollView>
     </Screen>
   );
 };
@@ -61,7 +200,18 @@ const styles = StyleSheet.create({
     borderColor: theme["color-primary-500"],
     marginVertical: 15,
   },
-  largeMarginTop: { marginTop: 30 },
+  largeMarginTop: {
+    marginTop: 30
+  },
+  input: {
+    marginTop: 15
+  },
+  unitRow: {
+    justifyContent: "space-between"
+  },
+  smallInput: {
+    width: "45%"
+  }
 });
 
 const validationSchema = yup.object().shape({

@@ -8,12 +8,16 @@ const iosNotch = 40;
 const iosHeight = baseHeight + iosNotch;
 let androidHeight = baseHeight;
 let androidNotch = 0;
+
 if (StatusBar.currentHeight) androidNotch = StatusBar.currentHeight;
 androidHeight += androidNotch;
 
 export const HEADERHEIGHT = Platform.OS === "ios" ? iosHeight : androidHeight;
+export const PHOTOS_STR = "photos";
+export const AMENITIES_STR = "amenities";
+export const DESCRIPTION_STR = "description";
 
-const serverUrl = "http:/192.168.1.10:4000/api";
+const serverUrl = "http:/172.16.0.150:4000/api";
 const location = "/location";
 const user = "/user";
 const property = "/property";
@@ -41,4 +45,16 @@ export const endpoints = {
 export const proxyOptions: AuthRequestPromptOptions = {
     useProxy: true,
     projectNameForProxy: "@danhdevapp/apartments-clone"
-  };
+};
+
+export const queryKeys = {
+    contactedProperties: "contactedProperties",
+    searchProperties: "searchProperties",
+    selectedProperty: "selectedProperty",
+    savedProperties: "savedProperties",
+    myProperties: "myProperties",
+    editProperty: "editProperty",
+    apartments: "apartments",
+    conversations: "conversations",
+    selectedConversation: "selectedConversation",
+};

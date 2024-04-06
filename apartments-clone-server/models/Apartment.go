@@ -7,7 +7,7 @@ import (
 
 type Apartment struct {
 	gorm.Model
-	PropertyID  uint           `json:"propertyID"`
+	PropertyID  uint           `json:"PropertyID"`
 	Unit        string         `json:"unit"`
 	Bedrooms    int            `json:"bedrooms"`
 	Bathrooms   float32        `json:"bathrooms"`
