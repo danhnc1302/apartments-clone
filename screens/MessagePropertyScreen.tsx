@@ -6,10 +6,10 @@ import {
   Image,
   Platform
 } from 'react-native';
-import { 
+import {
   Text,
-  Input, 
-  Button,  
+  Input,
+  Button,
 } from '@ui-kitten/components';
 import * as yup from "yup";
 import { Formik } from "formik";
@@ -41,8 +41,6 @@ const MessagePropertyScreen = ({
   const { tour, propertyID } = route.params;
   const index = properties.findIndex((i) => propertyID == i.ID);
   const property = properties[index];
-  const [pickedDate, setPickedDate] = useState<Date>(new Date());
-  const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const { user } = useUser();
 
   const sendMessage = (text: string) => {
@@ -55,171 +53,173 @@ const MessagePropertyScreen = ({
 
   return (
     <KeyboardAwareScrollView bounces={false}>
-    <Screen style={styles.container}>
-      {Platform.OS === "ios" ? <ModalHeader /> : null}
-      <Row style={styles.row}>
-        {property?.images && property.images.length > 0 ? (
-          <Image style={styles.image} source={{ uri: property.images[0] }} />
-        ) : null}
-        <View style={styles.address}>
-          {property?.name ? (
-            <Text category={"s1"}>{property.name}</Text>
+      <Screen style={styles.container}>
+        {Platform.OS === "ios" ? <ModalHeader /> : null}
+        <Row style={styles.row}>
+          {property?.images && property.images.length > 0 ? (
+            <Image style={styles.image} source={{ uri: property.images[0] }} />
           ) : null}
-          <Text category={"c1"}>
-            {property.street}, {property.city},{" "}
-            {getStateAbbreviation(property.state)} {property.zip}
-          </Text>
-          <Text category={"c1"}>
-            ${property.rentLow.toLocaleString()} -{" "}
-            {property.rentHigh.toLocaleString()} | {property.bedroomLow} -{" "}
-            {property.bedroomHigh} Beds
-          </Text>
-        </View>
-      </Row>
+          <View style={styles.address}>
+            {property?.name ? (
+              <Text category={"s1"}>{property.name}</Text>
+            ) : null}
+            <Text category={"c1"}>
+              {property.street}, {property.city},{" "}
+              {getStateAbbreviation(property.state)} {property.zip}
+            </Text>
+            <Text category={"c1"}>
+              ${property.rentLow.toLocaleString()} -{" "}
+              {property.rentHigh.toLocaleString()} | {property.bedroomLow} -{" "}
+              {property.bedroomHigh} Beds
+            </Text>
+          </View>
+        </Row>
 
-      <Formik
-        initialValues={{
-          firstName: user ? user.firstName : "",
-          lastName: user ? user.lastName : "",
-          phoneNumber: "",
-          email: user ? user.email : "",
-          message: tour ? "I would like to schedule a tour." : "",
-          date: new Date(),
-          showCalendar: false,
-        }}
-        validationSchema={yup.object().shape({
-          firstName: yup.string().required("Required"),
-          lastName: yup.string().required("Required"),
-          phoneNumber: yup.string(),
-          email: yup.string().email().required("Required"),
-          message: yup.string().required("Required"),
-          date: yup.date().required("Required"),
-          showCalendar: yup.bool(),
-        })}
-        onSubmit={(values) => {
-          // Apartments.com uses a different approach to messaging, hence all the field
-          // names. In our implementation we will only need the messsage from values
-          sendMessage(values.message);
-        }}
-      >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          isSubmitting,
-          setFieldTouched,
-          setFieldValue,
-        }) => {
-          return (
-            <>
-              <Input
-                style={styles.input}
-                value={values.firstName}
-                onChangeText={handleChange("firstName")}
-                placeholder="Your first name"
-                keyboardType="default"
-                label="First Name*"
-                onBlur={() => setFieldTouched("firstName")}
-                caption={
-                  touched.firstName && errors.firstName
-                    ? errors.firstName
-                    : undefined
-                }
-                status={
-                  touched.firstName && errors.firstName ? "danger" : "basic"
-                }
-              />
-              <Input
-                style={styles.input}
-                value={values.lastName}
-                onChangeText={handleChange("lastName")}
-                placeholder="Your last name"
-                keyboardType="default"
-                label="Last Name*"
-                onBlur={() => setFieldTouched("lastName")}
-                caption={
-                  touched.lastName && errors.lastName
-                    ? errors.lastName
-                    : undefined
-                }
-                status={
-                  touched.lastName && errors.lastName ? "danger" : "basic"
-                }
-              />
-              <Input
-                style={styles.input}
-                value={values.phoneNumber}
-                onChangeText={handleChange("phoneNumber")}
-                placeholder="Your phone number"
-                keyboardType="number-pad"
-                label="Phone Number"
-              />
-              <Input
-                style={styles.input}
-                value={values.email}
-                onChangeText={handleChange("email")}
-                placeholder="Your Email Address"
-                keyboardType="email-address"
-                label="Email*"
-                onBlur={() => setFieldTouched("email")}
-                caption={
-                  touched.email && errors.email ? errors.email : undefined
-                }
-                status={touched.email && errors.email ? "danger" : "basic"}
-              />
-
-              <PressableInput
-                style={styles.input}
-                label="Move-In Date"
-                value={values.date.toDateString()}
-                onPress={() => setFieldValue("showCalendar", true)}
-              />
-
-              <DateTimePicker
-                isVisible={values.showCalendar}
-                mode="date"
-                onConfirm={(selectedDate: Date) => {
-                  if (selectedDate) {
-                    setFieldValue("showCalendar", false);
-                    setFieldValue("date", selectedDate);
+        <Formik
+          initialValues={{
+            firstName: user ? user.firstName : "",
+            lastName: user ? user.lastName : "",
+            phoneNumber: "",
+            email: user ? user.email : "",
+            message: tour ? "I would like to schedule a tour." : "",
+            date: new Date(),
+            showCalendar: false,
+          }}
+          validationSchema={yup.object().shape({
+            firstName: yup.string().required("Required"),
+            lastName: yup.string().required("Required"),
+            phoneNumber: yup.string(),
+            email: yup.string().email().required("Required"),
+            message: yup.string().required("Required"),
+            date: yup.date().required("Required"),
+            showCalendar: yup.bool(),
+          })}
+          onSubmit={(values) => {
+            // Apartments.com uses a different approach to messaging, hence all the field
+            // names. In our implementation we will only need the messsage from values
+            sendMessage(values.message);
+          }}
+        >
+          {({
+            values,
+            errors,
+            touched,
+            handleChange,
+            isSubmitting,
+            setFieldTouched,
+            setFieldValue,
+          }) => {
+            return (
+              <>
+                <Input
+                  style={styles.input}
+                  value={values.firstName}
+                  onChangeText={handleChange("firstName")}
+                  placeholder="Your first name"
+                  keyboardType="default"
+                  label="First Name*"
+                  onBlur={() => setFieldTouched("firstName")}
+                  caption={
+                    touched.firstName && errors.firstName
+                      ? errors.firstName
+                      : undefined
                   }
-                }}
-                onCancel={() => setFieldValue("showCalendar", false)}
-              />
+                  status={
+                    touched.firstName && errors.firstName ? "danger" : "basic"
+                  }
+                />
+                <Input
+                  style={styles.input}
+                  value={values.lastName}
+                  onChangeText={handleChange("lastName")}
+                  placeholder="Your last name"
+                  keyboardType="default"
+                  label="Last Name*"
+                  onBlur={() => setFieldTouched("lastName")}
+                  caption={
+                    touched.lastName && errors.lastName
+                      ? errors.lastName
+                      : undefined
+                  }
+                  status={
+                    touched.lastName && errors.lastName ? "danger" : "basic"
+                  }
+                />
+                <Input
+                  style={styles.input}
+                  value={values.phoneNumber}
+                  onChangeText={handleChange("phoneNumber")}
+                  placeholder="Your phone number"
+                  keyboardType="number-pad"
+                  label="Phone Number"
+                />
+                <Input
+                  style={styles.input}
+                  value={values.email}
+                  onChangeText={handleChange("email")}
+                  placeholder="Your Email Address"
+                  keyboardType="email-address"
+                  label="Email*"
+                  onBlur={() => setFieldTouched("email")}
+                  caption={
+                    touched.email && errors.email ? errors.email : undefined
+                  }
+                  status={touched.email && errors.email ? "danger" : "basic"}
+                />
 
-              <Input
-                style={styles.input}
-                value={values.message}
-                onChangeText={handleChange("message")}
-                label="Custom Message"
-                multiline
-                numberOfLines={10}
-                onBlur={() => setFieldTouched("message")}
-                textAlignVertical="top"
-                caption={
-                  touched.message && errors.message
-                    ? errors.message
-                    : undefined
+                <PressableInput
+                  style={styles.input}
+                  label="Move-In Date"
+                  value={values.date.toDateString()}
+                  onPress={() => setFieldValue("showCalendar", true)}
+                />
+                {
+                  values.showCalendar && (
+                    <DateTimePicker
+                      isVisible={values.showCalendar}
+                      mode="date"
+                      onConfirm={(selectedDate: Date) => {
+                        if (selectedDate) {
+                          setFieldValue("showCalendar", false);
+                          setFieldValue("date", selectedDate);
+                        }
+                      }}
+                      onCancel={() => setFieldValue("showCalendar", false)}
+                    />
+                  )
                 }
-                placeholder="Say something nice, or not ..."
-                status={
-                  touched.message && errors.message ? "danger" : "basic"
-                }
-              />
+                <Input
+                  style={styles.input}
+                  value={values.message}
+                  onChangeText={handleChange("message")}
+                  label="Custom Message"
+                  multiline
+                  numberOfLines={10}
+                  onBlur={() => setFieldTouched("message")}
+                  textAlignVertical="top"
+                  caption={
+                    touched.message && errors.message
+                      ? errors.message
+                      : undefined
+                  }
+                  placeholder="Say something nice, or not ..."
+                  status={
+                    touched.message && errors.message ? "danger" : "basic"
+                  }
+                />
 
-              <Button
-                style={styles.sendMessageButton}
-                onPress={() => handleSubmit(values)}
-              >
-                Send Message
-              </Button>
-            </>
-          );
-        }}
-      </Formik>
-    </Screen>
-  </KeyboardAwareScrollView>
+                <Button
+                  style={styles.sendMessageButton}
+                  onPress={() => handleSubmit(values)}
+                >
+                  Send Message
+                </Button>
+              </>
+            );
+          }}
+        </Formik>
+      </Screen>
+    </KeyboardAwareScrollView>
   )
 }
 

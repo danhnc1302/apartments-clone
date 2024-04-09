@@ -17,7 +17,7 @@ export const PHOTOS_STR = "photos";
 export const AMENITIES_STR = "amenities";
 export const DESCRIPTION_STR = "description";
 
-const serverUrl = "http:/172.16.0.150:4000/api";
+const serverUrl = "http:/192.168.1.9:4000/api";
 const location = "/location";
 const user = "/user";
 const property = "/property";
