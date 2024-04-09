@@ -30,6 +30,10 @@ export const CardInformation = ({
   const editPropertyNavigation = () =>
     navigation.navigate("EditProperty", { propertyID: property.ID });
 
+  const handleHeartPress = () => {
+    
+  };
+
   const DefaultInfo = () => {
     return (
       <>

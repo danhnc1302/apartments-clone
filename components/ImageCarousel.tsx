@@ -59,6 +59,7 @@ export const ImageCarousel = ({
     })
   }
 
+  console.log("image: ", images)
   return (
     <>
       {

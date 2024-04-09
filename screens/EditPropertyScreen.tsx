@@ -62,12 +62,13 @@ const EditPropertyScreen = ({
   const scrollViewRef = useRef<KeyboardAwareScrollView | null>(null);
   const phoneRef = useRef<RNPhoneInput>(null);
   const [showAlternateScreen, setShowAlternateScreen] = useState("");
+  const [showUnitPhotos, setShowUnitPhotos] = useState(false);
   const [apartmentIndex, setApartmentIndex] = useState<number>(-1);
   const { user } = useUser();
 
-  const handleShowAlternateScreen = (index: number, name: string) => {
+  const handleShowAlternateScreen = (index: number) => {
     if (scrollViewRef.current) scrollViewRef.current.scrollToPosition(0, 0);
-    setShowAlternateScreen(name);
+    setShowAlternateScreen("name");
     setApartmentIndex(index);
   };
 
@@ -75,6 +76,16 @@ const EditPropertyScreen = ({
     setShowAlternateScreen("");
     setApartmentIndex(-1);
   };
+
+  const handleShowUnitImages = (index: number) => {
+    setShowUnitPhotos(true);
+    setApartmentIndex(index);
+  }
+  const handleHideUnitImages = () => {
+    setShowUnitPhotos(true);
+    setApartmentIndex(-1);
+  }
+
 
   const property: UseQueryResult<{ data: Property }, unknown> = useQuery(
     "property",
@@ -116,7 +127,7 @@ const EditPropertyScreen = ({
         ref={(ref) => (scrollViewRef.current = ref)}
         style={styles.container}
       >
-        {!showAlternateScreen && (
+        {!showUnitPhotos && (
           <Text category="h5" style={styles.header}>
             Basic Info
           </Text>
@@ -165,12 +176,21 @@ const EditPropertyScreen = ({
                 setFieldValue("apartments", newApartments);
               }
 
+              if (showUnitPhotos && apartmentIndex > -1) {
+                return <UnitPhotosPicker
+                  setImages={setFieldValue}
+                  images={values.apartments[apartmentIndex].images}
+                  field={`apartments[${apartmentIndex}].images`}
+                  cancel={handleHideAlternateScreen}
+                />
+              }
+
               return (
                 <>
                   {
                     values.apartments.map((i, index) => {
                       return (
-                        <View>
+                        <View key={i.unit + index}>
                           {
                             values.apartments.length > 1 ? (
                               <>
@@ -363,7 +383,7 @@ const EditPropertyScreen = ({
                           </Row>
                           <Divider style={styles.divider} />
                           <TouchableOpacity
-                            onPress={() => console.log("upload photos")}
+                            onPress={() => handleShowUnitImages(index)}
                           >
                             <Text status={"info"}>Unit Photos</Text>
                           </TouchableOpacity>

@@ -17,11 +17,13 @@ export const ModalHeader = (
     {
         xShown,
         text, 
-        style
+        style,
+        onPress
     }: {
         xShown?: boolean,
         text?: string,
-        style?: ViewStyle | ViewStyle[]
+        style?: ViewStyle | ViewStyle[],
+        onPress?: () => void
     }
 ) => {
 
@@ -33,7 +35,7 @@ export const ModalHeader = (
                 {
                     xShown ? (
                         <MaterialCommunityIcons 
-                            onPress={navigation.goBack}
+                            onPress={onPress ? onPress : navigation.goBack}
                             style={styles.close}
                             name="close"
                             color="black"

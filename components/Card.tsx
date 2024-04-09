@@ -5,9 +5,11 @@ import {
   ViewStyle,
   Pressable,
   TouchableOpacity,
+  Modal,
+  Dimensions
 } from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Modal, Button } from '@ui-kitten/components';
+import { Button } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
 import { useMutation, useQueryClient } from 'react-query';
 import { Property } from '../types/property';
@@ -74,7 +76,7 @@ export const Card = ({
   }
 
   return (
-    <Pressable onPress={onPress} style={[style, styles.container]}>
+    <Pressable onPress={onPress} style={[style, styles.boxShadow, styles.container]}>
       <ImageCarousel onImagePress={onPress} images={property.images} chevronsShown={true} />
       <CardInformation property={property} myProperty={myProperty} />
       {
@@ -86,9 +88,7 @@ export const Card = ({
       }
       <Modal
         visible={showModal}
-        backdropStyle={styles.backdrop}
-        onBackdropPress={closeModal}
-        
+        transparent
       >
         <View style={[styles.modal, styles.boxShadow]}>
         <Button
@@ -118,8 +118,10 @@ export const Card = ({
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: LISTMARGIN,
+    marginVertical: LISTMARGIN,
     borderRadius: 5,
     backgroundColor: "white",
+
   },
   ellipses: {
     backgroundColor: "#fff",
@@ -136,6 +138,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 5,
     padding: 20,
+    position: "absolute",
+    top: Dimensions.get("screen").height / 3,
+    right: Dimensions.get("screen").width /4
   },
   boxShadow: {
     shadowColor: "#000",
