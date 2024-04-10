@@ -19,7 +19,11 @@ export default function App() {
     }
     getUser();
   }, [])
+<<<<<<< HEAD
 danh
+=======
+
+>>>>>>> 1facb19a4f374de44d8a62060829c058cff688e2
   return (
     <AuthContext.Provider value={{ user, setUser }}>
       <QueryClientProvider client={queryClient}>
