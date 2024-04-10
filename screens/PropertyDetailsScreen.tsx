@@ -39,7 +39,7 @@ const PropertyDetailsScreen = ({
         renderItem={({item}) => (
           <>
             {
-              item.images ? <ImageCarousel images={item.images} indexShown imageStyle={styles.image}/> : null
+              item.images ? <ImageCarousel images={item.images} xShown imageStyle={styles.image}/> : null
             }
             <View style={styles.contentContainer}>
               <PropertyHeaderSection property={item}/>

@@ -3,6 +3,8 @@
 # dependencies
 node_modules/
 
+apartments-clone-server/pkg
+
 # Expo
 .expo/
 dist/

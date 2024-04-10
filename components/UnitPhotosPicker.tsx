@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, FlatList } from "react-native";
 import { Button, Text } from "@ui-kitten/components";
 
 import { ModalHeader } from "./ModalHeader";
@@ -16,6 +16,23 @@ export const UnitPhotosPicker = ({
   setImages: (field: string, values: any) => void;
   cancel?: () => void;
 }) => {
+
+  const deleteImage = (
+    index: number,
+    flatListRef: React.MutableRefObject<FlatList<any> | null> | undefined
+  ) => {
+    const newImages = images.filter((i, idx) => index  != idx);
+    setImages(field, newImages);
+    if (
+      index != 0 &&
+      index === images.length -1 &&
+      flatListRef &&
+      flatListRef.current
+    ) {
+      flatListRef.current.scrollToIndex({ index : index - 1 })
+    }
+  }
+
   return (
     <View>
       <ModalHeader
@@ -30,6 +47,8 @@ export const UnitPhotosPicker = ({
         <View style={styles.largeMarginTop}>
           <ImageCarousel
             images={images}
+            xShown
+            onXPress={deleteImage}
           />
         </View>
       ) : null}

@@ -11,18 +11,24 @@ import { Text } from '@ui-kitten/components';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { WIDTH } from '../constants';
+import { theme } from '../theme';
 
 export const ImageCarousel = ({
   images,
   onImagePress,
   chevronsShown,
-  indexShown,
+  xShown,
+  onXPress,
   imageStyle,
 }: {
   images: string[],
   onImagePress?: () => void,
   chevronsShown?: boolean,
-  indexShown?: boolean,
+  xShown?: boolean,
+  onXPress?: (
+    index: number,
+    flatListRef?: React.MutableRefObject<FlatList<any> | null>
+  ) => void
   imageStyle?: ImageStyle
 }) => {
 
@@ -59,7 +65,6 @@ export const ImageCarousel = ({
     })
   }
 
-  console.log("image: ", images)
   return (
     <>
       {
@@ -79,9 +84,20 @@ export const ImageCarousel = ({
                   source={{ uri: item }}
                   style={[styles.image, imageStyle]}
                 />
+                {
+                  xShown && onXPress ? (
+                    <MaterialCommunityIcons 
+                      name='close'
+                      style={styles.X}
+                      color={theme["color-primary-500"]}
+                      size={24}
+                      onPress={() => onXPress(index, flatListRef)}
+                    />
+                  ): null
+                }
               </Pressable>
             }
-            keyExtractor={(item) => item}
+            keyExtractor={(item, index) => item + index}
           />
         ) : (
           <Image
@@ -105,7 +121,7 @@ export const ImageCarousel = ({
       }
       {
 
-        indexShown && (
+        xShown && (
           <View style={styles.index}>
             <Text category={"c2"} style={styles.indexText}>
               {activeIndex + 1} of {images.length} photos
@@ -139,5 +155,22 @@ const styles = StyleSheet.create({
   },
   indexText: {
     color: "#fff"
-  }
+  },
+  X: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    backgroundColor: "#fff",
+    borderRadius: 30,
+    padding: 10,
+    zIndex: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 10,
+  },
 })

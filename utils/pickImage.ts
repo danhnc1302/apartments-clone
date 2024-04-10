@@ -10,9 +10,8 @@ export const pickImage = async (
     allowsEditing: true,
     base64: true,
   });
-  console.log("result: ",result)
-  if (!result.cancelled) {
-    const basedImage = `data:image/jpeg;base64,${result.base64}`;
+  if (!result.canceled) {
+    const basedImage = `data:image/jpeg;base64,${result.assets[0].base64}`;
     const newImages = [...images];
     newImages.push(basedImage);
     
