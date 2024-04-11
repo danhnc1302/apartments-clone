@@ -5,7 +5,8 @@ import {
   Pressable,
   FlatList,
   ImageStyle,
-  View
+  View,
+  ViewStyle
 } from 'react-native';
 import { Text } from '@ui-kitten/components';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -18,17 +19,18 @@ export const ImageCarousel = ({
   onImagePress,
   chevronsShown,
   xShown,
-  onXPress,
+  field,
+  setImages,
+  style,
   imageStyle,
 }: {
   images: string[],
   onImagePress?: () => void,
   chevronsShown?: boolean,
   xShown?: boolean,
-  onXPress?: (
-    index: number,
-    flatListRef?: React.MutableRefObject<FlatList<any> | null>
-  ) => void
+  field?: string,
+  setImages?: (field: string, value: any) => void,
+  style?: ViewStyle[] | ViewStyle,
   imageStyle?: ImageStyle
 }) => {
 
@@ -65,8 +67,23 @@ export const ImageCarousel = ({
     })
   }
 
+  const onXPress = (index: number) => {
+    if(field && setImages) {
+      const newImages = images.filter((i, idx) => index !== idx);
+      setImages(field, newImages);
+      if (
+        index != 0 &&
+        index === images.length -1 &&
+        flatListRef &&
+        flatListRef.current
+      ) {
+        flatListRef.current.scrollToIndex({ index : index - 1 })
+      }
+    }
+  }
+
   return (
-    <>
+    <View style={style}>
       {
         images && images.length > 0 ? (
         <FlatList
@@ -91,7 +108,7 @@ export const ImageCarousel = ({
                       style={styles.X}
                       color={theme["color-primary-500"]}
                       size={24}
-                      onPress={() => onXPress(index, flatListRef)}
+                      onPress={() => onXPress(index)}
                     />
                   ): null
                 }
@@ -129,7 +146,7 @@ export const ImageCarousel = ({
           </View>
         )
       }
-    </>
+    </View>
   )
 }
 

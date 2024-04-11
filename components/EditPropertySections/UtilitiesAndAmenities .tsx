@@ -1,43 +1,112 @@
 import React from "react";
 import {
-    View,
-    StyleSheet
+  View,
+  StyleSheet
 } from "react-native";
+import {
+  Text,
+  Divider,
+  Input
+} from "@ui-kitten/components";
+
 import { PickerItem } from "react-native-woodpicker";
+import { Select } from "../Select";
+import { AmenitiesList } from "../AmenitiesList";
+
+import { theme } from "../../theme";
+
+import { propertyUtilities } from "../../constants/propertyUtilities";
+import { propertyAmenities } from "../../constants/propertyAmenities";
+import { petValues } from "../../constants/petValues";
+import { laundryValues } from "../../constants/laundryValues";
+
 export const UtilitiesAndAmenities = ({
-    includedUtilities,
-    petsAllowed,
-    laundryType,
-    parkingFee,
-    amenities,
-    setFieldValue,
-    handleChange,
-  }: {
-    includedUtilities: string[];
-    petsAllowed: PickerItem;
-    laundryType: PickerItem;
-    parkingFee: string;
-    amenities: string[];
-    setFieldValue: (
-      field: string,
-      value: any,
-      shouldValidate?: boolean | undefined
-    ) => void;
-    handleChange: {
-      (e: React.ChangeEvent<any>): void;
-      <T = string | React.ChangeEvent<any>>(
-        field: T
-      ): T extends React.ChangeEvent<any>
-        ? void
-        : (e: string | React.ChangeEvent<any>) => void;
-    };
-  }) => {
-    return (
-        <>
-        </>
-    )
+  includedUtilities,
+  petsAllowed,
+  laundryType,
+  parkingFee,
+  amenities,
+  setFieldValue,
+  handleChange,
+}: {
+  includedUtilities: string[];
+  petsAllowed: PickerItem;
+  laundryType: PickerItem;
+  parkingFee: string;
+  amenities: string[];
+  setFieldValue: (
+    field: string,
+    value: any,
+    shouldValidate?: boolean | undefined
+  ) => void;
+  handleChange: {
+    (e: React.ChangeEvent<any>): void;
+    <T = string | React.ChangeEvent<any>>(
+      field: T
+    ): T extends React.ChangeEvent<any>
+      ? void
+      : (e: string | React.ChangeEvent<any>) => void;
+  };
+}) => {
+  return (
+    <View>
+      <Text category={"h6"} style={styles.defaultPaddingVertical}>
+        Utilities Included
+      </Text>
+      <AmenitiesList
+        amenitiesList={propertyUtilities}
+        setAmenities={setFieldValue}
+        field={"includedUtilities"}
+        totalUnitAmenities={includedUtilities}
+      />
+
+      <Text category={"h6"} style={styles.defaultPaddingVertical}>
+        Property Amenities
+      </Text>
+
+      <Select
+        label="Pets Allowed"
+        item={petsAllowed}
+        items={petValues}
+        onItemChange={(item) => setFieldValue("petsAllowed", item)}
+        style={styles.input}
+        isNullable={false}
+      />
+      <Select
+        label="Laundry Type"
+        item={laundryType}
+        items={laundryValues}
+        onItemChange={(item) => setFieldValue("laundryType", item)}
+        style={styles.input}
+        isNullable={false}
+      />
+      <Input
+        value={parkingFee}
+        onChangeText={handleChange("parkingFee")}
+        label="Parking Fee"
+        keyboardType="decimal-pad"
+        style={styles.input}
+      />
+
+      <AmenitiesList
+        style={styles.input}
+        amenitiesList={propertyAmenities}
+        setAmenities={setFieldValue}
+        field={"amenities"}
+        totalUnitAmenities={amenities}
+      />
+      <Divider style={[styles.divider, styles.input]} />
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
-
+  defaultPaddingVertical: { paddingVertical: 10 },
+  input: {
+    marginTop: 15,
+  },
+  divider: {
+    backgroundColor: theme["color-gray"],
+    marginVertical: 10,
+  },
 })

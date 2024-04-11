@@ -1,5 +1,21 @@
 import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { 
+  View, 
+  StyleSheet, 
+  TouchableOpacity,
+   
+} from "react-native";
+import {
+  Text,
+  Divider
+} from "@ui-kitten/components";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
+import { Row } from "../Row";
+import { ImageCarousel } from "../ImageCarousel";
+import { DescriptionInput } from "../DescriptionInput";
+
+import { pickImage } from "../../utils/pickImage";
 import { theme } from "../../theme";
 
 export const GeneralPropertyInfo = ({
@@ -16,8 +32,56 @@ export const GeneralPropertyInfo = ({
   ) => void;
 }) => {
   return (
-   <>
-   </>
+    <View>
+      <Text style={styles.header} category="h6">
+        General Property Info
+      </Text>
+
+      {images.length < 10 ? (
+        <View style={styles.largeMarginTop}>
+          <Text style={styles.smallHeader}>Photos</Text>
+          <TouchableOpacity
+            onPress={() => pickImage(images, "images", setFieldValue)}
+            style={styles.photoButton}
+          >
+            <Row style={styles.row}>
+              <MaterialCommunityIcons
+                name="cloud-upload-outline"
+                size={24}
+                color={"black"}
+                style={styles.icon}
+              />
+              <Text status="info">Upload Photos</Text>
+            </Row>
+            <Text style={styles.photoText} category="c2" appearance={"hint"}>
+              Photos must be in jpg or png format, and no larger than 10 MB in
+              size.
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
+
+      {images.length > 0 ? (
+        <ImageCarousel
+          images={images}
+          xShown
+          field={"images"}
+          setImages={setFieldValue}
+          style={styles.largeMarginTop}
+        />
+      ) : null}
+
+      <View style={styles.largeMarginTop}>
+        <Text style={styles.smallHeader}>Description (optional)</Text>
+        <DescriptionInput
+          field="description"
+          setDescription={setFieldValue}
+          value={description}
+        />
+      </View>
+
+      <Divider style={[styles.divider, styles.largeMarginTop]} />
+    </View>
   );
 };
 

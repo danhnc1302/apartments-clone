@@ -17,22 +17,6 @@ export const UnitPhotosPicker = ({
   cancel?: () => void;
 }) => {
 
-  const deleteImage = (
-    index: number,
-    flatListRef: React.MutableRefObject<FlatList<any> | null> | undefined
-  ) => {
-    const newImages = images.filter((i, idx) => index  != idx);
-    setImages(field, newImages);
-    if (
-      index != 0 &&
-      index === images.length -1 &&
-      flatListRef &&
-      flatListRef.current
-    ) {
-      flatListRef.current.scrollToIndex({ index : index - 1 })
-    }
-  }
-
   return (
     <View>
       <ModalHeader
@@ -40,7 +24,6 @@ export const UnitPhotosPicker = ({
         text="Unit Photos"
         onPress={cancel ? cancel : undefined}
       />
-
       <Text style={styles.text}>Pick images for your unit</Text>
 
       {images.length > 0 ? (
@@ -48,7 +31,8 @@ export const UnitPhotosPicker = ({
           <ImageCarousel
             images={images}
             xShown
-            onXPress={deleteImage}
+            style={styles.largeMarginTop}
+            field={field}
           />
         </View>
       ) : null}
