@@ -86,11 +86,17 @@ export const UnitsInput = ({
       description: "",
     });
     setFieldValue("apartments", apartments);
+    if (newApartments.length > 1 && unitType !== "mutliple") {
+      setFieldValue("unitType", "mutliple");
+    }
   }
 
   const removeUnit = (index: number) => {
     const newApartments = apartments.filter((i, idx) => idx !== index);
     setFieldValue("apartments", newApartments);
+    if (newApartments.length > 1 && unitType !== "single") {
+      setFieldValue("unitType", "single");
+    }
   }
 
   return (

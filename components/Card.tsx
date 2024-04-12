@@ -19,6 +19,7 @@ import { CardInformation } from './CardInformation';
 import { LISTMARGIN, endpoints } from '../constants';
 import { theme } from '../theme';
 import axios from 'axios';
+import { useLoading } from '../hooks/useLoading';
 
 export const Card = ({
   property,
@@ -31,7 +32,7 @@ export const Card = ({
   myProperty: boolean;
   style?: ViewStyle;
 }) => {
-
+  const { loading, setLoading } = useLoading();
   const queryClient = useQueryClient();
   const navigation = useNavigation();
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -41,32 +42,36 @@ export const Card = ({
   console.log(property.ID)
 
   const deleteProperty = useMutation(
-    () => axios.delete(`${endpoints.deletePeoperty}${property.ID}`),
+    () => axios.delete(`${endpoints.deleteProperty}${property.ID}`),
     {
       onMutate: async () => {
+        setLoading(true);
         await queryClient.cancelQueries("myproperties");
-        const prevProperties: { data: Property[]} | undefined = queryClient.getQueryData("myProperties");
-        if(prevProperties) {
+        const prevProperties: { data: Property[] } | undefined = queryClient.getQueryData("myProperties");
+        if (prevProperties) {
           const filtered = prevProperties.data.filter((i) => i.ID !== property.ID);
+          queryClient.setQueryData("myproperties", filtered);
         }
         return { prevProperties }
       },
       onError(err, newTodo, context) {
-          if(context?.prevProperties) {
-            queryClient.setQueryData(
-              "myproperties",
-              context?.prevProperties.data
-            )
-          }
+        setLoading(false);
+        if (context?.prevProperties) {
+          queryClient.setQueryData(
+            "myproperties",
+            context?.prevProperties.data
+          )
+        }
       },
       onSettled: () => {
+        setLoading(false);
         queryClient.invalidateQueries("myproperties");
       }
     }
   )
 
   const handleEditProperty = () => {
-    navigation.navigate("EditProperty", { propertyID: property.ID }); 
+    navigation.navigate("EditProperty", { propertyID: property.ID });
     closeModal();
   }
 
@@ -84,14 +89,14 @@ export const Card = ({
           <TouchableOpacity onPress={openModal} style={styles.ellipses}>
             <MaterialCommunityIcons name='dots-horizontal' color={theme['color-primary-500']} size={30} />
           </TouchableOpacity>
-        ): null
+        ) : null
       }
       <Modal
         visible={showModal}
         transparent
       >
         <View style={[styles.modal, styles.boxShadow]}>
-        <Button
+          <Button
             status={"info"}
             appearance="ghost"
             onPress={handleEditProperty}
@@ -140,7 +145,7 @@ const styles = StyleSheet.create({
     padding: 20,
     position: "absolute",
     top: Dimensions.get("screen").height / 3,
-    right: Dimensions.get("screen").width /4
+    right: Dimensions.get("screen").width / 4
   },
   boxShadow: {
     shadowColor: "#000",

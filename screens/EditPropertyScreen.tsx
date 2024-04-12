@@ -34,7 +34,7 @@ import {
   PHOTOS_STR,
   queryKeys,
 } from "../constants";
-import { Property } from "../types/property";
+import { EditPropertyObj, Property } from "../types/property";
 import { TempApartment } from "../types/tempApartment";
 import { DescriptionInput } from "../components/DescriptionInput";
 import { UtilitiesAndAmenities } from "../components/EditPropertySections/UtilitiesAndAmenities ";
@@ -42,6 +42,9 @@ import { petValues } from "../constants/petValues";
 import { laundryValues } from "../constants/laundryValues";
 import { ContactInfo } from "../components/EditPropertySections/ContactInfo";
 import { theme } from "../theme";
+import { PickerItem } from "react-native-woodpicker";
+
+import { useEditPropertyMutation } from "../hooks/mutations/useEditPropertyMutation";
 
 const EditPropertyScreen = ({
   route,
@@ -50,6 +53,7 @@ const EditPropertyScreen = ({
 }) => {
 
   const scrollViewRef = useRef<KeyboardAwareScrollView | null>(null);
+  const editProperty = useEditPropertyMutation();
   const phoneRef = useRef<RNPhoneInput>(null);
   const [showAlternateScreen, setShowAlternateScreen] = useState("");
   const [apartmentIndex, setApartmentIndex] = useState<number>(-1);
@@ -83,14 +87,14 @@ const EditPropertyScreen = ({
         bathrooms: bathValues.filter((item) => item.value === i.bathrooms)[0],
         sqFt: i.sqFt ? i.sqFt.toString() : "",
         rent: i.rent ? i.rent.toString() : "",
-        deposit: "0",
-        leaseLength: "12 Months",
-        availableOn: new Date(),
-        active: true,
+        deposit: i.deposit ? i.deposit.toString() : "0",
+        leaseLength: i?.leaseLength ? i.leaseLength : "12 Months",
+        availableOn: i?.availableOn ? new Date(i.availableOn) : new Date(),
+        active: i.active ?? true,
         showCalendar: false,
-        images: [],
-        amenities: [],
-        description: "",
+        images: i.images ? i.images : [],
+        amenities: i.amenities ? i.amenities : [],
+        description: i.description ? i.description : "",
       });
     }
   }
@@ -116,24 +120,92 @@ const EditPropertyScreen = ({
             initialValues={{
               unitType: propertyData?.unitType,
               apartments: initialApartments,
-              description: "",
-              images: [],
-              includedUtilities: [],
-              petsAllowed: petValues[0],
-              laundryType: laundryValues[0],
-              parkingFee: "",
-              amenities: [],
+              description: propertyData?.description ?? "",
+              images: propertyData?.images ?? [],
+              includedUtilities: propertyData?.includedUtilities ?? [],
+              petsAllowed: propertyData?.petsAllowed
+                ? petValues.filter(
+                  (i) => i.value === propertyData.petsAllowed
+                )[0]
+                : petValues[0],
+              laundryType: propertyData?.laundryType
+                ? laundryValues.filter(
+                  (i) => i.value === propertyData.laundryType
+                )[0]
+                : laundryValues[0],
+              parkingFee: propertyData?.parkingFee?.toString() ?? "",
+              amenities: propertyData?.amenities ?? [],
               name: propertyData?.name ?? "",
-              firstName: user?.firstName ? user.firstName : "",
-              lastName: user?.lastName ? user.lastName : "",
-              email: user ? user.email : "",
-              phoneNumber: "",
-              onMarket: false,
-              website: "",
-              countryCode: "",
+              firstName: propertyData?.firstName
+                ? propertyData.firstName
+                : user?.firstName
+                  ? user.firstName
+                  : "",
+              lastName: propertyData?.lastName
+                ? propertyData.lastName
+                : user?.lastName
+                  ? user.lastName
+                  : "",
+              email: propertyData?.email
+                ? propertyData.email
+                : user?.email
+                  ? user.email
+                  : "",
+              countryCode: propertyData?.countryCode ?? "US",
+              callingCode: propertyData?.callingCode ?? "",
+              phoneNumber: propertyData?.phoneNumber ?? "",
+              website: propertyData?.website ?? "",
+              onMarket: propertyData?.onMarket ? propertyData.onMarket : false,
             }}
             validationSchema={validationSchema}
-            onSubmit={(values) => console.log(values)}
+            onSubmit={(values) => {
+              const callingCode = phoneRef.current?.getCallingCode();
+              const countryCode = phoneRef.current?.getCountryCode();
+
+              const newApartments = [];
+              for (let i of values.apartments) {
+                newApartments.push({
+                  ID: i.ID,
+                  unit: i.unit,
+                  bedrooms: (i.bedrooms as PickerItem).value,
+                  bathrooms: (i.bathrooms as PickerItem).value,
+                  sqFt: Number(i.sqFt),
+                  rent: Number(i.rent),
+                  deposit: Number(i.deposit),
+                  leaseLength: i.leaseLength,
+                  availableOn: i.availableOn,
+                  active: i.active,
+                  images: i.images,
+                  amenities: i.amenities,
+                  description: i.description,
+                });
+              }
+
+              const obj: EditPropertyObj = {
+                ID: route.params.propertyID,
+                unitType: values.unitType,
+                amenities: values.amenities,
+                apartments: newApartments,
+                description: values.description,
+                email: values.email,
+                firstName: values.firstName,
+                images: values.images,
+                lastName: values.lastName,
+                includedUtilities: values.includedUtilities,
+                laundryType: values.laundryType.value,
+                name: values.name,
+                onMarket: values.onMarket,
+                parkingFee: Number(values.parkingFee),
+                petsAllowed: values.petsAllowed.value,
+                callingCode,
+                countryCode,
+                phoneNumber: values.phoneNumber,
+                website: values.website,
+              };
+
+              editProperty.mutate({ obj, propertyID: route.params.propertyID });
+
+            }}
           >
             {({
               values,
@@ -212,6 +284,11 @@ const EditPropertyScreen = ({
                     setFieldTouched={setFieldTouched}
                     touched={touched}
                   />
+                  {Object.keys(errors).length > 0 ? (
+                    <Text status={"danger"} category="label">
+                      {"Check Errors Above"}
+                    </Text>
+                  ) : null}
                   <Button onPress={() => {
                     console.log(values)
                     return handleSubmit()

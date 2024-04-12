@@ -8,9 +8,6 @@ export type Property = {
   ID: number;
   images: string[];
   rentLow: number;
-  tags: string[];
-  pets: Pet[];
-  features: string[];
   rentHigh: number;
   bedroomLow: number;
   bedroomHigh: number;
@@ -21,19 +18,27 @@ export type Property = {
   zip: number;
   lat: number;
   lng: number;
-  about: string;
-  phoneNumber: string;
+  countryCode: string;
   callingCode: string;
+  phoneNumber: string;
   website?: string;
   unitType: "single" | "multiple";
   description?: string;
   stars: number;
+  onMarket?: boolean;
   reviews?: Review[];
   apartments: Apartment[];
   scores?: Score[];
+  includedUtilities?: string[];
+  amenities?: string[];
+  petsAllowed: string;
+  laundryType: string;
   parkingFee?: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  userID: number;
   liked?: boolean;
-  onMarket?: boolean
 };
 
 export type CreateProperty = {
@@ -50,6 +55,8 @@ export type CreateProperty = {
     unit?: string;
     bedrooms: number;
     bathrooms: number;
+    active: boolean;
+    availableOn: Date;
   }[];
 };
 

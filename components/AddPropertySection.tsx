@@ -7,7 +7,7 @@ import { useState } from "react";
 import { PickerItem } from "react-native-woodpicker";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as yup from "yup";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 
 import { Screen } from "./Screen";
 import { Select } from "../components/Select";
@@ -22,7 +22,7 @@ import { CreateProperty } from "../types/property";
 import { useUser } from "../hooks/useUser";
 import { bathValues } from "../constants/bathValues"
 import { bedValues } from "../constants/bedValues"
-import { useNavigation } from "@react-navigation/native";
+import { StackActions, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { endpoints } from "../constants";
 import { Property } from "../types/property";
@@ -32,6 +32,7 @@ export const AddPropertySection = () => {
   const navigation = useNavigation();
   const [searchingLocation, setSearchingLocation] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchLocation[]>([]);
+  const queryClient = useQueryClient();
 
   const createProperty = useMutation(
     "property",
@@ -43,7 +44,10 @@ export const AddPropertySection = () => {
         alert("Unable to create property!");
       },
       onSuccess(data: {data: Property}) {
-        navigation.navigate("EditProperty", {propertyID: data.data.ID});
+        queryClient.invalidateQueries("myproperties")
+        navigation.dispatch(
+          StackActions.replace("EditProperty", {propertyID: data.data.ID})
+        );
       }
     }
   )
@@ -88,12 +92,16 @@ export const AddPropertySection = () => {
             unit: i.unit,
             bathrooms: i.bathrooms.value,
             bedrooms: i.bedrooms.value,
+            active: true,
+            availableOn
           });
         }
       } else {
         obj.apartments.push({
           bathrooms: values.unit.bathrooms.value,
           bedrooms: values.unit.bedrooms.value,
+          active: true,
+          availableOn,
         });
       }
 

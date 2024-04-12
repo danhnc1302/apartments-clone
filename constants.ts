@@ -39,7 +39,8 @@ export const endpoints = {
     createProperty: propertyEndpoint + "/create",
     getPropertyByUserId: propertyEndpoint + "/",
     getPropertiesByUserId: propertyEndpoint + "/userId/",
-    deletePeoperty: propertyEndpoint + "/",
+    deleteProperty: propertyEndpoint + "/",
+    updateProperty: propertyEndpoint + "/update/",
 }
 
 export const proxyOptions: AuthRequestPromptOptions = {
