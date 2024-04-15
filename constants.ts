@@ -17,14 +17,16 @@ export const PHOTOS_STR = "photos";
 export const AMENITIES_STR = "amenities";
 export const DESCRIPTION_STR = "description";
 
-const serverUrl = "http:/192.168.1.9:4000/api";
+const serverUrl = "http:/192.168.1.11:4000/api";
 const location = "/location";
 const user = "/user";
 const property = "/property";
+const apartment = "/property";
 
 const locationEndpoint = serverUrl + location;
 const userEndpoint = serverUrl + user;
 const propertyEndpoint = serverUrl + property;
+const apartmentEndpoint = serverUrl + apartment;
 
 export const endpoints = {
     search: locationEndpoint + "/search",
@@ -41,6 +43,8 @@ export const endpoints = {
     getPropertiesByUserId: propertyEndpoint + "/userId/",
     deleteProperty: propertyEndpoint + "/",
     updateProperty: propertyEndpoint + "/update/",
+    updateApartment: apartmentEndpoint + "/update/",
+
 }
 
 export const proxyOptions: AuthRequestPromptOptions = {

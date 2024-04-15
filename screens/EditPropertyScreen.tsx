@@ -5,15 +5,18 @@ import {
 
 } from "react-native";
 import { Text, Button } from "@ui-kitten/components";
-import axios from "axios";
 import {
+  QueryClient,
+  useMutation,
   useQuery,
+  useQueryClient,
   UseQueryResult,
 } from "react-query";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Formik } from "formik";
 import RNPhoneInput from "react-native-phone-number-input";
 import * as yup from "yup";
+import axios from "axios";
 
 import { Loading } from "../components/Loading";
 import { Screen } from "../components/Screen";
@@ -45,6 +48,8 @@ import { theme } from "../theme";
 import { PickerItem } from "react-native-woodpicker";
 
 import { useEditPropertyMutation } from "../hooks/mutations/useEditPropertyMutation";
+import { useLoading } from "../hooks/useLoading";
+import { useNavigation } from "@react-navigation/native";
 
 const EditPropertyScreen = ({
   route,
@@ -53,11 +58,33 @@ const EditPropertyScreen = ({
 }) => {
 
   const scrollViewRef = useRef<KeyboardAwareScrollView | null>(null);
-  const editProperty = useEditPropertyMutation();
+  // const editProperty = useEditPropertyMutation();
   const phoneRef = useRef<RNPhoneInput>(null);
   const [showAlternateScreen, setShowAlternateScreen] = useState("");
   const [apartmentIndex, setApartmentIndex] = useState<number>(-1);
   const { user } = useUser();
+
+  const navigation = useNavigation()
+  const { setLoading } = useLoading();
+  const queryClient = useQueryClient();
+  const editProperty = useMutation(
+    (obj: EditPropertyObj) => axios.patch(`${endpoints.updateProperty}${route.params.propertyID}`, obj),
+    {
+      onMutate: () => {
+        setLoading(true);
+      },
+      onError(err) {
+        setLoading(false);
+        alert("Error updating property")
+      },
+      onSuccess() {
+        queryClient.invalidateQueries("myproperties");
+        setLoading(false);
+        navigation.goBack();
+      }
+    }
+
+  )
 
   const handleShowAlternateScreen = (index: number, name: string) => {
     if (scrollViewRef.current) scrollViewRef.current.scrollToPosition(0, 0);
@@ -203,7 +230,7 @@ const EditPropertyScreen = ({
                 website: values.website,
               };
 
-              editProperty.mutate({ obj, propertyID: route.params.propertyID });
+              editProperty.mutate(obj);
 
             }}
           >
@@ -355,8 +382,8 @@ const validationSchema = yup.object().shape({
           label: yup.string().required("Required"),
           value: yup.string().required("Required"),
         }),
-        sqFt: yup.string(),
-        rent: yup.string(),
+        sqFt: yup.string().required("Required"),
+        rent: yup.string().required("Required"),
         deposit: yup.string().required("Required"),
         leaseLength: yup.string().required("Required"),
         availableOn: yup.date().required("Required"),
