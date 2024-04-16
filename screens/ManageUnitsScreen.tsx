@@ -1,6 +1,6 @@
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { QueryClient, useMutation, useQuery, useQueryClient } from "react-query";
 import { Formik } from "formik";
 import { View, StyleSheet } from "react-native";
 import { Button, Divider } from "@ui-kitten/components";
@@ -16,18 +16,40 @@ import { bathValues } from "../constants/bathValues";
 import { ManageUnitsCard } from "../components/ManageUnitsCard";
 import { theme } from "../theme";
 import { useLoading } from "../hooks/useLoading";
-import { useApartmentsQuery } from "../hooks/queries/useApartmentsQuery";
-import { useEditApartmentMutation } from "../hooks/mutations/useEditApartmentsMutation";
 
-export const ManageUnitsScreen = ({
+const ManageUnitsScreen = ({
   route,
 }: {
   route: { params: { propertyID: number } };
 }) => {
-  const apartments = useApartmentsQuery(route.params.propertyID);
-  const editApartments = useEditApartmentMutation();
+  
+  const navigation = useNavigation();
+  const { setLoading } = useLoading();
+  const queryClient = useQueryClient();
+  const apartments = useQuery<{ data: Apartment[] }>("apartments", () =>
+    axios.get(`${endpoints.getApartmentsByPropertyID}${route.params.propertyID}`)
+  )
 
-  const apartmentData = apartments.data;
+  const editApartments = useMutation(
+    (obj: EditApartment[]) => axios.patch(`${endpoints.updateApartments}${route.params.propertyID}`, obj),
+    {
+      onMutate: () => {
+        setLoading(true);
+      },
+      onError(err) {
+        setLoading(false);
+        alert("Error updating apartments");
+      },
+      onSuccess() {
+        queryClient.invalidateQueries("myproperties");
+        setLoading(false);
+        navigation.goBack();
+      }
+    }
+
+  )
+
+  const apartmentData = apartments?.data?.data;
   const initialApartments: EditApartment[] = [];
   if (apartmentData) {
     for (let i of apartmentData) {
@@ -58,10 +80,9 @@ export const ManageUnitsScreen = ({
               i.sqFt = Number(i.sqFt);
             }
 
-            editApartments.mutate({
-              obj: values.apartments,
-              propertyID: route.params.propertyID,
-            });
+            editApartments.mutate(
+              values.apartments,
+            );
           }}
         >
           {({
@@ -143,6 +164,8 @@ export const ManageUnitsScreen = ({
     </KeyboardAwareScrollView>
   );
 };
+
+export default ManageUnitsScreen;
 
 const validationSchema = yup.object().shape({
   apartments: yup.array(

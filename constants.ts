@@ -21,7 +21,7 @@ const serverUrl = "http:/192.168.1.11:4000/api";
 const location = "/location";
 const user = "/user";
 const property = "/property";
-const apartment = "/property";
+const apartment = "/apartment";
 
 const locationEndpoint = serverUrl + location;
 const userEndpoint = serverUrl + user;
@@ -43,8 +43,8 @@ export const endpoints = {
     getPropertiesByUserId: propertyEndpoint + "/userId/",
     deleteProperty: propertyEndpoint + "/",
     updateProperty: propertyEndpoint + "/update/",
-    updateApartment: apartmentEndpoint + "/update/",
-
+    updateApartments: apartmentEndpoint + "/property/",
+    getApartmentsByPropertyID: apartmentEndpoint + "/property/",
 }
 
 export const proxyOptions: AuthRequestPromptOptions = {
