@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/kataras/iris/v12"
 	"github.com/thanhpk/randstr"
+	"gorm.io/gorm/clause"
 	// "github.com/kataras/iris/v12/middleware/jwt"
 )
 
@@ -88,17 +89,17 @@ func GetProperty(ctx iris.Context) {
 func GetPropertiesByUserID(ctx iris.Context) {
 	params := ctx.Params()
 	id := params.Get("id")
-	fmt.Println("GetPropertiesByID:",id)
-
 
 	var properties []models.Property
-	propertiesExist := storage.DB.Preload("Apartments").Where("user_id = ?", id).Find(&properties)
+	propertiesExist := storage.DB.Preload(clause.Associations).Where("user_id = ?", id).Find(&properties)
+
 	if propertiesExist.Error != nil {
 		utils.CreateError(
 			iris.StatusInternalServerError,
 			"Error", propertiesExist.Error.Error(), ctx)
 		return
 	}
+
 	ctx.JSON(properties)
 }
 
@@ -256,7 +257,7 @@ func UpdateProperty(ctx iris.Context) {
 func GetPropertyAndAssociationsByPropertyID(id string, ctx iris.Context) *models.Property {
 
 	var property models.Property
-	propertyExists := storage.DB.Preload("Apartments").Find(&property, id)
+	propertyExists := storage.DB.Preload(clause.Associations).Find(&property, id)
 
 	if propertyExists.Error != nil {
 		utils.CreateInternalServerError(ctx)
@@ -305,6 +306,23 @@ func insertImages(arg InsertImages) []string {
 		}
 	}
 	return imagesArr
+}
+
+func GetPropertiesByBoundingBox(ctx iris.Context) {
+	var boundingBox BoundingBoxInput
+	err := ctx.ReadJSON(&boundingBox)
+	if err != nil {
+		utils.HandleValidationErrors(err, ctx)
+		return
+	}
+
+	var properties []models.Property
+	storage.DB.Preload(clause.Associations).
+		Where("lat >= ? AND lat <= ? AND lng >= ? AND lng <= ? AND on_market = true",
+			boundingBox.LatLow, boundingBox.LatHigh, boundingBox.LngLow, boundingBox.LngHigh).
+		Find(&properties)
+
+	ctx.JSON(properties)
 }
 
 type InsertImages struct {

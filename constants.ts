@@ -22,11 +22,14 @@ const location = "/location";
 const user = "/user";
 const property = "/property";
 const apartment = "/apartment";
+const review = "/review";
 
 const locationEndpoint = serverUrl + location;
 const userEndpoint = serverUrl + user;
 const propertyEndpoint = serverUrl + property;
 const apartmentEndpoint = serverUrl + apartment;
+const reviewEndpoint = serverUrl + review;
+
 
 export const endpoints = {
     search: locationEndpoint + "/search",
@@ -45,6 +48,8 @@ export const endpoints = {
     updateProperty: propertyEndpoint + "/update/",
     updateApartments: apartmentEndpoint + "/property/",
     getApartmentsByPropertyID: apartmentEndpoint + "/property/",
+    createReview: reviewEndpoint + "/property/",
+
 }
 
 export const proxyOptions: AuthRequestPromptOptions = {

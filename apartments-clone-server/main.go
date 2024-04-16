@@ -57,5 +57,10 @@ func main() {
 		apartment.Patch("/property/{id}", routes.UpdateApartments)
 	}
 
+	review := app.Party("api/review")
+	{
+		review.Post("/property/{id}", routes.CreateReview)
+	}
+
 	app.Listen(":4000")
 }

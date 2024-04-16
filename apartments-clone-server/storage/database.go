@@ -33,6 +33,7 @@ func performMigrations(db *gorm.DB) {
 		&models.User{},
 		&models.Property{},
 		&models.Apartment{},
+		&models.Review{},
 	)
 }
 
