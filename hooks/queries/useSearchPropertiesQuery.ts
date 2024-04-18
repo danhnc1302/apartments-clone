@@ -14,7 +14,7 @@ const fetchProperties = async (boundingBox?: number[]): Promise<Property[]> => {
     lngLow: boundingBox[2],
     lngHigh: boundingBox[3],
   });
-
+  console.log("response:",response)
   const data: Property[] = response.data;
   return data;
 };

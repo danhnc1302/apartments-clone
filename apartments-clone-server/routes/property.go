@@ -68,6 +68,8 @@ func CreateProperty(ctx iris.Context) {
 		UserID:       propertyInput.UserID,
 	}
 
+	fmt.Println(property)
+	fmt.Println(&property)
 	storage.DB.Create(&property)
 
 	ctx.JSON(property)
@@ -315,7 +317,6 @@ func GetPropertiesByBoundingBox(ctx iris.Context) {
 		utils.HandleValidationErrors(err, ctx)
 		return
 	}
-
 	var properties []models.Property
 	storage.DB.Preload(clause.Associations).
 		Where("lat >= ? AND lat <= ? AND lng >= ? AND lng <= ? AND on_market = true",

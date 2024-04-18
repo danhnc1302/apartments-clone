@@ -65,6 +65,7 @@ export const GeneralPropertyInfo = ({
         <ImageCarousel
           images={images}
           xShown
+          indexShown
           field={"images"}
           setImages={setFieldValue}
           style={styles.largeMarginTop}
