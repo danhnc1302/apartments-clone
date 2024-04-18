@@ -17,7 +17,7 @@ export const PHOTOS_STR = "photos";
 export const AMENITIES_STR = "amenities";
 export const DESCRIPTION_STR = "description";
 
-const serverUrl = "http:/192.168.1.11:4000/api";
+const serverUrl = "http:/172.16.0.162:4000/api";
 const location = "/location";
 const user = "/user";
 const property = "/property";
@@ -29,7 +29,7 @@ const userEndpoint = serverUrl + user;
 const propertyEndpoint = serverUrl + property;
 const apartmentEndpoint = serverUrl + apartment;
 const reviewEndpoint = serverUrl + review;
-
+const savedEndpoint = (id: number) => `${userEndpoint}/${id}/properties/saved`;
 
 export const endpoints = {
     search: locationEndpoint + "/search",
@@ -42,14 +42,16 @@ export const endpoints = {
     forgotPassword: userEndpoint + "/forgotpassword",
     resetPassword: userEndpoint + "/resetpassword",
     createProperty: propertyEndpoint + "/create",
-    getPropertyByUserId: propertyEndpoint + "/",
-    getPropertiesByUserId: propertyEndpoint + "/userId/",
+    getPropertyByID: propertyEndpoint + "/",
+    getPropertiesByUserID: propertyEndpoint + "/userId/",
     deleteProperty: propertyEndpoint + "/",
     updateProperty: propertyEndpoint + "/update/",
     updateApartments: apartmentEndpoint + "/property/",
     getApartmentsByPropertyID: apartmentEndpoint + "/property/",
     createReview: reviewEndpoint + "/property/",
-
+    getSavedPropertiesByUserID: savedEndpoint,
+    alterSavedPropertiesByUserID: savedEndpoint,
+    getPropertiesByBoundingBox: propertyEndpoint + "/search",
 }
 
 export const proxyOptions: AuthRequestPromptOptions = {

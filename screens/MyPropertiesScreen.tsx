@@ -15,20 +15,18 @@ import { theme } from "../theme";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { Property } from "../types/property";
-import { endpoints } from "../constants";
+import { endpoints, queryKeys } from "../constants";
 
 const MyPropertiesScreen = () => {
   const navigation = useNavigation();
   const { user } = useUser();
 
-  const properties = useQuery("myproperties", async () => {
+  const properties = useQuery(queryKeys.myProperties, async () => {
     if(user) {
-      console.log(`${endpoints.getPropertiesByUserId}${user.ID}`)
-      return axios.get<Property[]>(`${endpoints.getPropertiesByUserId}${user.ID}`)
+      console.log(`${endpoints.getPropertiesByUserID}${user.ID}`)
+      return axios.get<Property[]>(`${endpoints.getPropertiesByUserID}${user.ID}`)
     }
   })
-
-
 
   const addPropertyNavigation = () => {
     navigation.navigate("AddProperty");

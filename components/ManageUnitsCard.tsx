@@ -1,212 +1,168 @@
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { Text, Input, Button } from "@ui-kitten/components";
-import { MaterialIcons } from "@expo/vector-icons";
-import { FormikErrors, FormikTouched } from "formik/dist/types";
-import { PickerItem } from "react-native-woodpicker";
+import React, { useEffect, useRef, useState } from "react";
+import {
+    View,
+    StyleSheet,
+    Platform,
+    TouchableOpacity
+} from "react-native";
+import MapView, { Region } from "react-native-maps";
+import { useNavigation } from "@react-navigation/native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { theme } from "../theme";
-import { EditApartment } from "../types/apartment";
-import { Row } from "./Row";
-import { Select } from "./Select";
-import { bedValues } from "../constants/bedValues";
-import { bathValues } from "../constants/bathValues";
+import { Property } from "../types/property";
 
-export const ManageUnitsCard = ({
-  apartment,
-  index,
-  removable,
-  errors,
-  touched,
-  removeUnit,
-  setFieldValue,
-  setFieldTouched,
-  handleChange,
+import { MapMarker } from "./MapMarker";
+import { Card } from "./Card";
+import { Button } from "@ui-kitten/components";
+import { getPropertiesInArea } from "../data/properties";
+
+let mapRegion: Region | undefined = undefined;
+
+export const Map = ({
+    properties,
+    mapRef,
+    initialRegion,
+    location,
+    setLocation,
+    setProperties,
 }: {
-  apartment: EditApartment;
-  index: number;
-  removable: boolean;
-  errors: FormikErrors<{
-    apartments: EditApartment[];
-  }>;
-  touched: FormikTouched<{
-    apartments: EditApartment[];
-  }>;
-  removeUnit: (idx: number) => void;
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean | undefined
-  ) => void;
-  setFieldTouched: (
-    field: string,
-    isTouched?: boolean | undefined,
-    shouldValidate?: boolean | undefined
-  ) => void;
-  handleChange: {
-    (e: React.ChangeEvent<any>): void;
-    <T = string | React.ChangeEvent<any>>(
-      field: T
-    ): T extends React.ChangeEvent<any>
-      ? void
-      : (e: string | React.ChangeEvent<any>) => void;
-  };
+    properties: Property[],
+    mapRef: React.MutableRefObject<MapView | null>,
+    initialRegion?: Region | undefined,
+    location: string,
+    setLocation: (location: string) => void,
+    setProperties: (properties: Property[]) => void
 }) => {
-  const changeApartmentArchive = () => {
-    setFieldValue(`apartments[${index}].active`, !apartment.active);
-  };
 
-  const showEditName = () =>
-    setFieldValue(`apartments[${index}].editName`, true);
+    const [activeIndex, setActiveIndex] = useState(-1);
+    const [showSearchAreaButton, setShowSearchAreaButton] = useState<boolean>(false);
+    const [region, setRegion] = useState<Region | undefined>(
+        mapRegion ? mapRegion : undefined
+    )
+    const [boundingBox, setBoundingBox] = useState<number[]>([]);
+    const navigation = useNavigation();
 
-  const hideEditName = () =>
-    setFieldValue(`apartments[${index}].editName`, false);
+    useEffect(() => {
+        if (location === "Map Area") return;
+        if (initialRegion) {
+            setShowSearchAreaButton(false);
+            setRegion(initialRegion);
+        }
+    }, [initialRegion])
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.unitNameContainer}>
-        <Row style={styles.unitNameRow}>
-          {apartment.unit && !apartment.editName ? (
-            <>
-              <Text>{apartment.unit}</Text>
-              <TouchableOpacity
-                onPress={showEditName}
-                style={styles.editNameButton}
-              >
-                <MaterialIcons
-                  name="info-outline"
-                  size={18}
-                  color={theme["color-info-500"]}
-                />
-                <Text style={styles.editNameText} status="info">
-                  Edit
-                </Text>
-              </TouchableOpacity>
-            </>
-          ) : (
-            <>
-              <Input
-                style={styles.editNameInput}
-                value={apartment.unit}
-                onChangeText={handleChange(`apartments[${index}].unit`)}
-                placeholder="Unit Name"
-                autoCorrect={false}
-                onBlur={() => setFieldTouched(`apartments[${index}].unit`)}
-                caption={
-                  touched.apartments &&
-                  (touched.apartments[index] as any)?.unit &&
-                  errors.apartments &&
-                  (errors.apartments[index] as any)?.unit
-                    ? (errors.apartments[index] as any)?.unit
-                    : undefined
+    const unFocusProperty = () => {
+        setActiveIndex(-1);
+        navigation.setOptions({ tabBarStyle: { display: "flexs" } });
+    }
+
+    const handleMapPress = () => {
+        if (Platform.OS === "android") unFocusProperty();
+    }
+
+    const handleMarkerPress = (index: number) => {
+        setTimeout(() => {
+            mapRef.current?.animateCamera({ center: { latitude: properties[index].lat, longitude: properties[index].lng } })
+        }, 100);
+        setTimeout(() => {
+            const newRegion: Region = {
+                latitude: properties[index].lat,
+                latitudeDelta: region?.latitudeDelta ? region.latitudeDelta : 0.4,
+                longitude: properties[index].lng,
+                longitudeDelta: region?.longitudeDelta ? region.longitudeDelta : 0.4
+            }
+            setRegion(newRegion)
+        }, 600);
+        setActiveIndex(index)
+        navigation.setOptions({ tabBarStyle: { display: "none" } })
+    }
+
+    const handleSearchAreaButtonPress = () => {
+        setProperties(getPropertiesInArea(boundingBox));
+        setLocation("Map Area");
+        mapRegion = region;
+        setShowSearchAreaButton(false);
+    }
+
+    return (
+        <View style={styles.container}>
+            <MapView
+                provider={"google"}
+                style={styles.map}
+                userInterfaceStyle={"light"}
+                ref={mapRef}
+                onPress={handleMapPress}
+                initialRegion={initialRegion ? initialRegion : undefined}
+                onRegionChangeComplete={(region, isGesture) => {
+                    if (isGesture?.isGesture) {
+                        if (!showSearchAreaButton) setShowSearchAreaButton(true);
+                        const newBoundingBox = [
+                            region.latitude - region.latitudeDelta / 2,
+                            region.latitude + region.latitudeDelta / 2,
+                            region.longitude - region.longitudeDelta / 2,
+                            region.longitude + region.longitudeDelta / 2,
+                        ];
+                        setRegion(region);
+                        setBoundingBox(newBoundingBox);
+                    }
+                }}
+            >
+                {
+                    properties.map((property, index) => <MapMarker lat={property.lat} lng={property.lng} color={activeIndex === index ? theme['color-info-400'] : theme['color-info-500']} onPress={() => handleMarkerPress(index)} />)
                 }
-                status={
-                  touched.apartments &&
-                  (touched.apartments[index] as any)?.unit &&
-                  errors.apartments &&
-                  (errors.apartments[index] as any)?.unit
-                    ? "danger"
-                    : "basic"
-                }
-              />
-              <TouchableOpacity
-                onPress={hideEditName}
-                style={styles.doneButton}
-              >
-                <Text status="info">Done</Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </Row>
-      </View>
-      <View style={styles.inputContainer}>
-        <Select
-          label="Beds"
-          item={apartment.bedrooms as PickerItem}
-          items={bedValues}
-          onItemChange={(item) => {
-            setFieldValue(`apartments[${index}].bedrooms`, item);
-          }}
-          isNullable={false}
-        />
-        <Select
-          label="Baths"
-          style={styles.defaultMarginTop}
-          item={apartment.bathrooms as PickerItem}
-          items={bathValues}
-          onItemChange={(item) => {
-            setFieldValue(`apartments[${index}].bathrooms`, item);
-          }}
-          isNullable={false}
-        />
-
-        <Input
-          style={styles.defaultMarginTop}
-          value={apartment.sqFt as string}
-          onChangeText={handleChange(`apartments[${index}].sqFt`)}
-          placeholder="Unit Sq Ft"
-          label="Sq Ft"
-          autoCorrect={false}
-          onBlur={() => setFieldTouched(`apartments[${index}].sqFt`)}
-          caption={
-            touched.apartments &&
-            (touched.apartments[index] as any)?.sqFt &&
-            errors.apartments &&
-            (errors.apartments[index] as any)?.sqFt
-              ? (errors.apartments[index] as any)?.sqFt
-              : undefined
-          }
-          status={
-            touched.apartments &&
-            (touched.apartments[index] as any)?.sqFt &&
-            errors.apartments &&
-            (errors.apartments[index] as any)?.sqFt
-              ? "danger"
-              : "basic"
-          }
-        />
-
-        <Button
-          onPress={removable ? () => removeUnit(index) : changeApartmentArchive}
-          appearance="ghost"
-          status="info"
-          style={[
-            styles.defaultMarginTop,
+            </MapView>
             {
-              alignSelf: "flex-end",
-            },
-          ]}
-        >
-          {removable ? "Remove" : apartment.active ? "Archive" : "Unarchive"}
-        </Button>
-      </View>
-    </View>
-  );
-};
+                activeIndex > -1 && (
+                    <>
+                        {Platform.OS === "ios" && (
+                            <TouchableOpacity style={styles.exit} onPress={unFocusProperty}>
+                                <MaterialCommunityIcons name="close" color={theme["color-primary-500"]} size={24} />
+                            </TouchableOpacity>
+                        )}
+                        <Card property={properties[activeIndex]} style={styles.card} onPress={() => navigation.navigate("PropertyDetails", { propertyID: properties[activeIndex].ID })} />
+                    </>
+                )
+            }
+            {
+                showSearchAreaButton && activeIndex === -1 && (
+                    <Button style={styles.searchAreaButton} appearance={"ghost"} onPress={handleSearchAreaButtonPress}>
+                        Search Area
+                    </Button>
+                )
+            }
+        </View>
+    )
+}
 
 const styles = StyleSheet.create({
-  container: {
-    borderColor: theme["color-gray"],
-    borderWidth: 1,
-    marginHorizontal: 10,
-    borderRadius: 5,
-    marginVertical: 10,
-  },
-  unitNameContainer: { backgroundColor: theme["color-gray"] },
-  unitNameRow: {
-    alignItems: "flex-start",
-    paddingHorizontal: 10,
-    paddingVertical: 15,
-  },
-  editNameButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 10,
-  },
-  editNameText: { marginLeft: 5 },
-  editNameInput: {
-    width: "80%",
-  },
-  doneButton: { marginLeft: 20, marginTop: 10 },
-  inputContainer: { paddingHorizontal: 10, paddingVertical: 15 },
-  defaultMarginTop: { marginTop: 10 },
+    container: {
+        flex: 1,
+        overflow: "hidden",
+    },
+    map: {
+        height: "100%",
+        width: "100%",
+    },
+    card: {
+        position: "absolute",
+        bottom: 10,
+    },
+    exit: {
+        backgroundColor: "#fff",
+        padding: 10,
+        position: "absolute",
+        top: 170,
+        left: 15,
+        borderRadius: 30,
+    },
+    searchAreaButton: {
+        position: "absolute",
+        bottom: 30,
+        zIndex: 100,
+        borderRadius: 30,
+        alignSelf: "center",
+        backgroundColor: "white",
+        borderColor: theme["color-gray"],
+        borderWidth: 1,
+    },
 });

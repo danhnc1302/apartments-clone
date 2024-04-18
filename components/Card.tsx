@@ -16,7 +16,7 @@ import { Property } from '../types/property';
 
 import { ImageCarousel } from './ImageCarousel';
 import { CardInformation } from './CardInformation';
-import { LISTMARGIN, endpoints } from '../constants';
+import { LISTMARGIN, endpoints, queryKeys } from '../constants';
 import { theme } from '../theme';
 import axios from 'axios';
 import { useLoading } from '../hooks/useLoading';
@@ -29,7 +29,7 @@ export const Card = ({
 }: {
   property: Property;
   onPress?: () => void;
-  myProperty: boolean;
+  myProperty?: boolean;
   style?: ViewStyle;
 }) => {
   const { loading, setLoading } = useLoading();
@@ -46,11 +46,11 @@ export const Card = ({
     {
       onMutate: async () => {
         setLoading(true);
-        await queryClient.cancelQueries("myproperties");
-        const prevProperties: { data: Property[] } | undefined = queryClient.getQueryData("myProperties");
+        await queryClient.cancelQueries(queryKeys.myProperties);
+        const prevProperties: { data: Property[] } | undefined = queryClient.getQueryData(queryKeys.myProperties);
         if (prevProperties) {
           const filtered = prevProperties.data.filter((i) => i.ID !== property.ID);
-          queryClient.setQueryData("myproperties", filtered);
+          queryClient.setQueryData(queryKeys.myProperties, filtered);
         }
         return { prevProperties }
       },
@@ -58,14 +58,14 @@ export const Card = ({
         setLoading(false);
         if (context?.prevProperties) {
           queryClient.setQueryData(
-            "myproperties",
+            queryKeys.myProperties,
             context?.prevProperties.data
           )
         }
       },
       onSettled: () => {
         setLoading(false);
-        queryClient.invalidateQueries("myproperties");
+        queryClient.invalidateQueries(queryKeys.myProperties);
       }
     }
   )
@@ -73,12 +73,12 @@ export const Card = ({
   const handleEditProperty = () => {
     navigation.navigate("EditProperty", { propertyID: property.ID });
     closeModal();
-  }
+  };
 
   const handleDeleteProperty = () => {
     deleteProperty.mutate();
     closeModal();
-  }
+  };
 
   return (
     <Pressable onPress={onPress} style={[style, styles.boxShadow, styles.container]}>

@@ -17,6 +17,8 @@ import { Card } from "./Card";
 import { Button } from "@ui-kitten/components";
 import { getPropertiesInArea } from "../data/properties";
 
+import { useSearchPropertiesQuery } from "../hooks/queries/useSearchPropertiesQuery"
+
 let mapRegion: Region | undefined = undefined;
 
 export const Map = ({
@@ -42,6 +44,9 @@ export const Map = ({
     )
     const [boundingBox, setBoundingBox] = useState<number[]>([]);
     const navigation = useNavigation();
+
+    // const searchProperties = useSearchPropertiesQuery(boundingBox);
+
 
     useEffect(() => {
         if (location === "Map Area") return;
@@ -78,6 +83,7 @@ export const Map = ({
     }
 
     const handleSearchAreaButtonPress = () => {
+        // searchProperties.refetch();
         setProperties(getPropertiesInArea(boundingBox));
         setLocation("Map Area");
         mapRegion = region;

@@ -1,3 +1,4 @@
+import React from "react";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { QueryClient, useMutation, useQuery, useQueryClient } from "react-query";
@@ -41,7 +42,7 @@ const ManageUnitsScreen = ({
         alert("Error updating apartments");
       },
       onSuccess() {
-        queryClient.invalidateQueries("myproperties");
+        queryClient.invalidateQueries(queryKeys.myProperties);
         setLoading(false);
         navigation.goBack();
       }

@@ -7,7 +7,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import MapView from 'react-native-maps';
 import LottieView from 'lottie-react-native';
-import { LISTMARGIN, HEADERHEIGHT } from '../constants';
+import { LISTMARGIN, HEADERHEIGHT, queryKeys, endpoints } from '../constants';
 import { Text } from '@ui-kitten/components';
 import { Screen } from '../components/Screen';
 import { Card } from '../components/Card';
@@ -16,6 +16,8 @@ import { getPropertiesInArea } from '../data/properties';
 import { Map } from '../components/Map';
 import { SearchScreenParams } from '../types';
 import { Property } from '../types/property';
+import { useQuery } from 'react-query';
+import axios from 'axios';
 
 const SearchScreen = ({
   route,
@@ -29,6 +31,42 @@ const SearchScreen = ({
   const mapRef = useRef<MapView | null>(null);
   const [properties, setProperties] = useState<Property[]>([]);
   const [location, setLocation] = useState<string | undefined>(undefined)
+  // const searchProperties = useQuery(
+  //   queryKeys.searchProperties,
+  //   () => {
+  //     if (route.params.boundingBox) {
+  //       const boundingBox = [
+  //         Number(route.params.boundingBox[0]),
+  //         Number(route.params.boundingBox[1]),
+  //         Number(route.params.boundingBox[2]),
+  //         Number(route.params.boundingBox[3]),
+  //       ]
+  //       return axios.post(`${endpoints.getPropertiesByBoundingBox}`, {
+  //         latLow: boundingBox[0],
+  //         latHigh: boundingBox[1],
+  //         lngLow: boundingBox[2],
+  //         lngHigh: boundingBox[3],
+  //       });
+  //     }
+  //   }, 
+  //   {
+  //     enabled: false
+  //   }
+  // )
+
+  // useEffect(() => {
+  //   if (route.params) {
+  //     setLocation(route.params.location);
+  //     searchProperties.refetch();
+
+  //     mapRef?.current?.animateCamera({
+  //       center: {
+  //         latitude: Number(route.params.lat),
+  //         longitude: Number(route.params.lon),
+  //       },
+  //     });
+  //   }
+  // }, [route]);
 
   useEffect(() => {
     if (route.params) {

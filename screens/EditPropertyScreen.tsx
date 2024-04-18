@@ -78,13 +78,15 @@ const EditPropertyScreen = ({
         alert("Error updating property")
       },
       onSuccess() {
-        queryClient.invalidateQueries("myproperties");
+        queryClient.invalidateQueries(queryKeys.myProperties);
         setLoading(false);
         navigation.goBack();
       }
     }
 
   )
+
+  console.log("editProperty: ", )
 
   const handleShowAlternateScreen = (index: number, name: string) => {
     if (scrollViewRef.current) scrollViewRef.current.scrollToPosition(0, 0);
@@ -99,7 +101,7 @@ const EditPropertyScreen = ({
 
   const property: UseQueryResult<{ data: Property }, unknown> = useQuery(
     "property",
-    () => axios.get(endpoints.getPropertyByUserId + route.params.propertyID)
+    () => axios.get(endpoints.getPropertyByID + route.params.propertyID)
   );
 
   const propertyData = property.data?.data;
@@ -204,7 +206,7 @@ const EditPropertyScreen = ({
                   active: i.active,
                   images: i.images,
                   amenities: i.amenities,
-                  description: i.description,
+                  description: i.description,                
                 });
               }
 

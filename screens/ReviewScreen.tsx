@@ -1,21 +1,18 @@
+import React from "react";
 import { View, Platform, StyleSheet } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Text, Input, Button } from "@ui-kitten/components";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { useMutation, useQueryClient } from "react-query";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
-import { endpoints, queryKeys } from "../constants";
 import { useUser } from "../hooks/useUser";
 import { SignUpOrSignInScreen } from "./SignUpOrSignInScreen";
 import { theme } from "../theme";
 import { Row } from "../components/Row";
 import { TouchableStarsContainer } from "../components/TouchableStarsContainer";
-import { useLoading } from "../hooks/useLoading";
 import { CreateReview } from "../types/review";
 import { useCreateReviewMutation } from "../hooks/mutations/useCreateReviewMutation";
 
@@ -26,9 +23,6 @@ const ReviewScreen = ({
 }) => {
   const { user } = useUser();
   const navigation = useNavigation();
-  const queryClient = useQueryClient();
-  const { setLoading } = useLoading();
-
   const createReview = useCreateReviewMutation();
 
   if (!user) return <SignUpOrSignInScreen />;

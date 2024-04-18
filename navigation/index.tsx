@@ -113,10 +113,13 @@ function RootNavigation() {
     )
 }
 
-const BottomTab = createBottomTabNavigator<RootTabParamList>()
+const BottomTab = createBottomTabNavigator<RootTabParamList>();
 function BottomTabNavigator() {
     return (
-        <BottomTab.Navigator initialRouteName="Search">
+        <BottomTab.Navigator initialRouteName="Search"
+            screenOptions={{
+                tabBarActiveTintColor: theme["color-primary-500"],
+            }}>
             <BottomTab.Screen
                 name="Search"
                 component={SearchScreen}
@@ -183,6 +186,7 @@ function AccountStack() {
         </AccountStackNavigator.Navigator>
     )
 }
+
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/

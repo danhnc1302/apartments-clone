@@ -8,10 +8,13 @@ export const useUser = () => {
   const { user, setUser } = useContext(AuthContext);
   const queryClient = useQueryClient();
   
-  const setSavedProperties = () => {
-
-  }
-
+  const setSavedProperties = (savedProperties: number[]) => {
+    if (user) {
+      const newUser = { ...user };
+      newUser.savedProperties = savedProperties;
+      setAndStoreUser(newUser);
+    }
+  };
   const login = (user: User) => {
     let stringUser = JSON.stringify(user);
     setUser(user);
@@ -25,10 +28,17 @@ export const useUser = () => {
       queryClient.clear();
   };
 
+  const setAndStoreUser = (user: User) => {
+    let stringUser = JSON.stringify(user);
+    setUser(user);
+    SecureStore.setItemAsync("user", stringUser);
+  };
+
    return {
     user,
     setUser,
     setSavedProperties,
+    setAndStoreUser,
     login,
     logout
   };

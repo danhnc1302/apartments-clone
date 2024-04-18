@@ -24,7 +24,7 @@ import { bathValues } from "../constants/bathValues"
 import { bedValues } from "../constants/bedValues"
 import { StackActions, useNavigation } from "@react-navigation/native";
 import axios from "axios";
-import { endpoints } from "../constants";
+import { endpoints, queryKeys } from "../constants";
 import { Property } from "../types/property";
 
 export const AddPropertySection = () => {
@@ -44,7 +44,7 @@ export const AddPropertySection = () => {
         alert("Unable to create property!");
       },
       onSuccess(data: {data: Property}) {
-        queryClient.invalidateQueries("myproperties")
+        queryClient.invalidateQueries(queryKeys.myProperties)
         navigation.dispatch(
           StackActions.replace("EditProperty", {propertyID: data.data.ID})
         );

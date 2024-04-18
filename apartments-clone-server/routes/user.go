@@ -9,12 +9,14 @@ import (
 	"strings"	
 	"io/ioutil"
 	"log"
+	"strconv"
 	"encoding/json"
 	"net/http"
 	"fmt"
 	"github.com/MicahParks/keyfunc"
 	jsonWT "github.com/kataras/iris/v12/middleware/jwt"
 	"github.com/golang-jwt/jwt/v4"
+	"golang.org/x/exp/slices"
 )
 
 func Register(ctx iris.Context) {
@@ -88,18 +90,11 @@ func Login(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(iris.Map{
-		"ID": existingUser.ID,
-		"firstName": existingUser.FirstName,
-		"lastName": existingUser.LastName,
-		"email": existingUser.Email,
-	})
-
 	returnUser(existingUser, ctx)
 }
 
 func ForgotPassword(ctx iris.Context) {
-	var emailInput EmailRegistedInput
+	var emailInput EmailRegisteredInput
 	err := ctx.ReadJSON(&emailInput)
 	if err != nil {
 		utils.HandleValidationErrors(err, ctx)
@@ -188,6 +183,135 @@ func ResetPassword(ctx iris.Context) {
 	})
 }
 
+func GetUserSavedProperties(ctx iris.Context) {
+	params := ctx.Params()
+	id := params.Get("id")
+
+	user := getUserByID(id, ctx)
+	if user == nil {
+		return
+	}
+
+	var properties []models.Property
+	var savedProperties []uint
+	unmarshalErr := json.Unmarshal(user.SavedProperties, &savedProperties)
+	if unmarshalErr != nil {
+		utils.CreateInternalServerError(ctx)
+		return
+	}
+
+	propertiesExist := storage.DB.Where("id IN ?", savedProperties).Find(&properties)
+
+	if propertiesExist.Error != nil {
+		utils.CreateInternalServerError(ctx)
+		return
+	}
+
+	ctx.JSON(properties)
+}
+
+func AlterUserSavedProperties(ctx iris.Context) {
+	params := ctx.Params()
+	id := params.Get("id")
+
+	user := getUserByID(id, ctx)
+	if user == nil {
+		return
+	}
+
+	var req AlterSavedPropertiesInput
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		utils.HandleValidationErrors(err, ctx)
+		return
+	}
+
+	propertyID := strconv.FormatUint(uint64(req.PropertyID), 10)
+
+	validPropertyID := GetPropertyAndAssociationsByPropertyID(propertyID, ctx)
+
+	if validPropertyID == nil {
+		return
+	}
+
+	var savedProperties []uint
+	var unMarshalledProperties []uint
+
+	if user.SavedProperties != nil {
+		unmarshalErr := json.Unmarshal(user.SavedProperties, &unMarshalledProperties)
+
+		if unmarshalErr != nil {
+			utils.CreateInternalServerError(ctx)
+			return
+		}
+	}
+
+	if req.Op == "add" {
+		if !slices.Contains(unMarshalledProperties, req.PropertyID) {
+			savedProperties = append(unMarshalledProperties, req.PropertyID)
+		} else {
+			savedProperties = unMarshalledProperties
+		}
+	} else if req.Op == "remove" && len(unMarshalledProperties) > 0 {
+		for _, propertyID := range unMarshalledProperties {
+			if req.PropertyID != propertyID {
+				savedProperties = append(savedProperties, propertyID)
+			}
+		}
+	}
+
+	marshalledProperties, marshalErr := json.Marshal(savedProperties)
+
+	if marshalErr != nil {
+		utils.CreateInternalServerError(ctx)
+		return
+	}
+
+	user.SavedProperties = marshalledProperties
+
+	rowsUpdated := storage.DB.Model(&user).Updates(user)
+
+	if rowsUpdated.Error != nil {
+		utils.CreateInternalServerError(ctx)
+		return
+	}
+
+	ctx.StatusCode(iris.StatusNoContent)
+}
+
+// func GetUserContactedProperties(ctx iris.Context) {
+// 	params := ctx.Params()
+// 	id := params.Get("id")
+
+// 	var conversations []models.Conversation
+// 	conversationsExist := storage.DB.Where("tenant_id = ?", id).Find(&conversations)
+// 	if conversationsExist.Error != nil {
+// 		utils.CreateInternalServerError(ctx)
+// 		return
+// 	}
+
+// 	if conversationsExist.RowsAffected == 0 {
+// 		utils.CreateNotFound(ctx)
+// 		return
+// 	}
+
+// 	var properties []models.Property
+// 	var propertyIDs []uint
+// 	for _, conversation := range conversations {
+// 		propertyIDs = append(propertyIDs, conversation.PropertyID)
+// 	}
+
+// 	propertiesExist := storage.DB.Where("id IN ?", propertyIDs).Find(&properties)
+
+// 	if propertiesExist.Error != nil {
+// 		utils.CreateInternalServerError(ctx)
+// 		return
+// 	}
+
+// 	ctx.JSON(properties)
+// }
+
+
 func returnUser(user models.User, ctx iris.Context) {
 	// tokenPair, tokenErr := utils.CreateTokenPair(user.ID)
 	// if tokenErr != nil {
@@ -200,7 +324,7 @@ func returnUser(user models.User, ctx iris.Context) {
 		"firstName":           user.FirstName,
 		"lastName":            user.LastName,
 		"email":               user.Email,
-		// "savedProperties":     user.SavedProperties,
+		"savedProperties":     user.SavedProperties,
 		// "allowsNotifications": user.AllowsNotifications,
 		// "accessToken":         string(tokenPair.AccessToken),
 		// "refreshToken":        string(tokenPair.RefreshToken),
@@ -372,7 +496,6 @@ func AppleLoginOrSignUp(ctx iris.Context) {
 		if userExists == false {
 			user = models.User{FirstName: "", LastName: "", Email: email, SocialLogin: true, SocialProvider: "Apple"}
 			storage.DB.Create(&user)
-
 			returnUser(user, ctx)
 			return
 		}
@@ -413,44 +536,75 @@ func getAndHandleUserExists(user *models.User, email string) (exists bool, err e
 	return false, nil
 }
 
+func getUserByID(id string, ctx iris.Context) *models.User {
+	var user models.User
+	userExists := storage.DB.Where("id = ?", id).Find(&user)
+
+	if userExists.Error != nil {
+		utils.CreateInternalServerError(ctx)
+		return nil
+	}
+
+	if userExists.RowsAffected == 0 {
+		utils.CreateError(iris.StatusNotFound, "Not Found", "User not found", ctx)
+		return nil
+	}
+
+	return &user
+}
+
 type RegisterUserInput struct {
-	FirstName 		string `json:"firstName" validate:"required,max=256"`
-	LastName  		string `json:"lastName" validate:"required,max=256"`
-	Email     		string `json:"email" validate:"required,max=256,email"`
-	Password  		string `json:"password" validate:"required,min=8,max=256"`
+	FirstName string `json:"firstName" validate:"required,max=256"`
+	LastName  string `json:"lastName" validate:"required,max=256"`
+	Email     string `json:"email" validate:"required,max=256,email"`
+	Password  string `json:"password" validate:"required,min=8,max=256"`
 }
 
 type LoginUserInput struct {
-	Email    		string `json:"email" validate:"required,email"`
-	Password 		string `json:"password" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 }
 
 type FacebookOrGoogleUserInput struct {
-	AccessToken 	string `json:"accessToken" validate:"required"`
+	AccessToken string `json:"accessToken" validate:"required"`
 }
 
 type AppleUserInput struct {
-	IdentityToken 	string `json:"identityToken" validate:"required"`
+	IdentityToken string `json:"identityToken" validate:"required"`
 }
 
 type FacebookUserRes struct {
-	ID 				string `json:"id"`
-	Name 			string `json:"name"`
-	Email 			string `json:"email"`
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
 type GoogleUserRes struct {
-	ID				string `json:"id"`
-	Email			string `json:"email"`
-	Name			string `json:"name"`
-	GivenName		string `json:"given_name"`
-	FamilyName		string `json:"family_name"`
+	ID         string `json:"id"`
+	Email      string `json:"email"`
+	Name       string `json:"name"`
+	GivenName  string `json:"given_name"`
+	FamilyName string `json:"family_name"`
 }
 
-type EmailRegistedInput struct {
+type EmailRegisteredInput struct {
 	Email string `json:"email" validate:"required"`
 }
 
 type ResetPasswordInput struct {
 	Password string `json:"password" validate:"required,min=8,max=256"`
+}
+
+type AlterSavedPropertiesInput struct {
+	PropertyID uint   `json:"propertyID" validate:"required"`
+	Op         string `json:"op" validate:"required"`
+}
+
+type AlterPushTokenInput struct {
+	Token string `json:"token" validate:"required"`
+	Op    string `json:"op" validate:"required"`
+}
+
+type AllowsNotificationsInput struct {
+	AllowsNotifications *bool `json:"allowsNotifications" validate:"required"`
 }
