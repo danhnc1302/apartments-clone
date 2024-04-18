@@ -6,8 +6,10 @@ import { User } from "../types/user";
 import { AuthRequestPromptOptions } from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
 import * as Facebook from "expo-auth-session/providers/facebook";
+import * as AppleAuthentication from "expo-apple-authentication";
 
 import {
+    appleLoginOrRegister,
     facebookLoginOrRegister,
     googleLoginOrRegister,
     loginUser,
@@ -116,7 +118,29 @@ export const useAuth = () => {
               setLoading(false);
             }
           };
+
+          const appleAuth = async () => {
+            try {
+              const { identityToken } = await AppleAuthentication.signInAsync({
+                requestedScopes: [
+                  AppleAuthentication.AppleAuthenticationScope.EMAIL,
+                  AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+                ],
+              });
+        
+              if (identityToken) {
+                setLoading(true);
+        
+                const user = await appleLoginOrRegister(identityToken);
+                handleSignInUser(user);
+              }
+            } catch (error) {
+              handleAuthError();
+            } finally {
+              setLoading(false);
+            }
+          };
         
 
-    return { nativeRegister, nativeLogin, facebookAuth, googleAuth };
+    return { nativeRegister, nativeLogin, facebookAuth, googleAuth, appleAuth };
 }   

@@ -3,6 +3,8 @@ import { AuthContext } from "../context";
 import { User } from "../types/user";
 import * as SecureStore from "expo-secure-store";
 import { useQueryClient } from "react-query";
+import { queryKeys } from "../constants";
+import { Property } from "../types/property";
 
 export const useUser = () => {
   const { user, setUser } = useContext(AuthContext);
@@ -19,7 +21,18 @@ export const useUser = () => {
     let stringUser = JSON.stringify(user);
     setUser(user);
     SecureStore.setItemAsync("user", stringUser);
-    queryClient.refetchQueries();
+    const searchedProperties: Property[] | undefined = queryClient.getQueryData(
+      queryKeys.searchProperties
+    );
+
+    if (searchedProperties) {
+      for (let i of searchedProperties) {
+        i.liked = false;
+        if (user.savedProperties?.includes(i.ID)) i.liked = true;
+      }
+      queryClient.setQueryData(queryKeys.searchProperties, searchedProperties);
+    }
+
   };
 
   const logout = () => {

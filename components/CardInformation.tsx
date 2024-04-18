@@ -9,6 +9,7 @@ import { Row } from "./Row";
 import { callPhoneNumber } from "../utils/callPhoneNumber";
 import { getStateAbbreviation } from "../utils/getStateAbbreviation";
 import { useUser } from "../hooks/useUser";
+import { useSavePropertyMutation } from "../hooks/mutations/useSavePropertyMutation";
 
 export const CardInformation = ({
   property,
@@ -19,29 +20,29 @@ export const CardInformation = ({
 }) => {
   const navigation = useNavigation();
   const { user, setSavedProperties } = useUser();
-  // const saveProperty = useSavePropertyMutation();
+  const saveProperty = useSavePropertyMutation();
 
-  // const alterUsersSavedProperties = (
-  //   propertyID: number,
-  //   type: "add" | "remove"
-  // ) => {
-  //   let newProperties: number[] = user?.savedProperties
-  //     ? [...user.savedProperties]
-  //     : [];
+  const alterUsersSavedProperties = (
+    propertyID: number,
+    type: "add" | "remove"
+  ) => {
+    let newProperties: number[] = user?.savedProperties
+      ? [...user.savedProperties]
+      : [];
 
-  //   if (type === "add") newProperties.push(propertyID);
-  //   else newProperties = newProperties.filter((i) => i !== propertyID);
+    if (type === "add") newProperties.push(propertyID);
+    else newProperties = newProperties.filter((i) => i !== propertyID);
 
-  //   setSavedProperties(newProperties);
-  // };
+    setSavedProperties(newProperties);
+  };
 
   const handleHeartPress = () => {
-    // if (!user) return alert("Please sign up or sign in to save properties");
-    // let op: "add" | "remove" = "add";
-    // if (property?.liked) op = "remove";
+    if (!user) return alert("Please sign up or sign in to save properties");
+    let op: "add" | "remove" = "add";
+    if (property?.liked) op = "remove";
 
-    // alterUsersSavedProperties(property.ID, op);
-    // saveProperty.mutate({ propertyID: property.ID, op });
+    alterUsersSavedProperties(property.ID, op);
+    saveProperty.mutate({ propertyID: property.ID, op });
   };
 
   const manageUnitsNavigation = () =>

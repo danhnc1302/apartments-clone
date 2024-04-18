@@ -8,37 +8,35 @@ import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
 import { PasswordInput } from "../components/PasswordInput";
 import { useNavigation } from "@react-navigation/native";
-import { Loading } from "../components/Loading";
-import { endpoints } from "../constants";
-import { useMutation } from "react-query";
-import axios from "axios";
+import { resetPassword } from "../services/user";
+import { useLoading } from "../hooks/useLoading";
 
 const ResetPasswordScreen = ({
   route
 }:{
   route: { params: { token: string } }
 }) => {
-  const navigation = useNavigation()
+  const { navigate } = useNavigation();
+  const { setLoading } = useLoading();
 
-  const resetPassword = useMutation(
-    async (password:string) => {
-      return axios.post(endpoints.resetPassword, {password}, {
-        headers: {
-          Authorization: `Bearer ${route.params.token}`
-        }
-      })
-  },
-    {
-      onSuccess() {
-        navigation.navigate("SignIn");
-      },
-      onError(error:any) {
-        if(error.response.status === 401)
-          return alert("Invalid or Expired Token");
-        alert("Unable to reset password!");
-      }
+  const handleSubmit = async (values: {
+    password: string;
+    passwordRepeat: string;
+  }) => {
+    try {
+      setLoading(true);
+      const passwordReset = await resetPassword(
+        values.password,
+        route.params.token
+      );
+      if (passwordReset) navigate("SignIn");
+    } catch (error) {
+      alert("Unable to reset password");
+    } finally {
+      setLoading(false);
     }
-  )
+  };
+
   return (
     <KeyboardAwareScrollView bounces={false}>
       <Screen>
@@ -65,8 +63,7 @@ const ResetPasswordScreen = ({
                 .oneOf([yup.ref("password"), null], "Passwords don't match")
                 .required("Required"),
             })}
-            onSubmit={async (values) => resetPassword.mutate(values.password)
-            }
+            onSubmit={handleSubmit}
           >
             {({
               values,

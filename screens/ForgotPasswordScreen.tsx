@@ -7,36 +7,24 @@ import { useState } from "react";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
-
-import axios from "axios";
-import { endpoints } from "../constants";
-import { useMutation } from "react-query";
-import { Loading } from "../components/Loading";
-
+import { useLoading } from "../hooks/useLoading";
+import { forgotPassword } from "../services/user";
 
 const ForgotPasswordScreen = () => {
   const [emailSent, setEmailSent] = useState(false);
+  const { setLoading } = useLoading();
 
   const handleSubmit = async (values: { email: string }) => {
-    
-  };
-
-  const forgotPassword = useMutation(
-    async(email: string) => {
-      console.log(email)
-      return await axios.post(endpoints.forgotPassword, {email})
-    },
-    {
-      onSuccess(data) {
-          if(data.data.emailSent) setEmailSent(true);
-      },
-      onError(error: any) {
-          alert(error?.response.data.detail);
-      },
+    try {
+      setLoading(true);
+      const emailSent = await forgotPassword(values.email);
+      if (emailSent?.emailSent) setEmailSent(true);
+    } catch (error) {
+      alert("Error placing email");
+    } finally {
+      setLoading(false);
     }
-  )
-
-  if(forgotPassword.isLoading) return <Loading/>
+  };
 
   return (
     <KeyboardAwareScrollView bounces={false}>
@@ -69,7 +57,7 @@ const ForgotPasswordScreen = () => {
               validationSchema={yup.object().shape({
                 email: yup.string().email().required("Your email is required."),
               })}
-              onSubmit={(values) => forgotPassword.mutate(values.email)}
+              onSubmit={handleSubmit}
             >
               {({
                 values,
@@ -118,7 +106,7 @@ const ForgotPasswordScreen = () => {
   );
 };
 
-export default ForgotPasswordScreen; 
+export default ForgotPasswordScreen;
 
 const styles = StyleSheet.create({
   container: { marginHorizontal: 10 },

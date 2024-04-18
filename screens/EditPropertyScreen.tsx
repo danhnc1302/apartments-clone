@@ -1,22 +1,13 @@
 import React, { useState, useRef } from "react";
 import {
   StyleSheet,
-  View,
-
+  View
 } from "react-native";
 import { Text, Button } from "@ui-kitten/components";
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-  UseQueryResult,
-} from "react-query";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Formik } from "formik";
 import RNPhoneInput from "react-native-phone-number-input";
 import * as yup from "yup";
-import axios from "axios";
 
 import { Loading } from "../components/Loading";
 import { Screen } from "../components/Screen";
@@ -33,13 +24,10 @@ import { bathValues } from "../constants/bathValues";
 import {
   AMENITIES_STR,
   DESCRIPTION_STR,
-  endpoints,
   PHOTOS_STR,
-  queryKeys,
 } from "../constants";
-import { EditPropertyObj, Property } from "../types/property";
+import { EditPropertyObj } from "../types/property";
 import { TempApartment } from "../types/tempApartment";
-import { DescriptionInput } from "../components/DescriptionInput";
 import { UtilitiesAndAmenities } from "../components/EditPropertySections/UtilitiesAndAmenities ";
 import { petValues } from "../constants/petValues";
 import { laundryValues } from "../constants/laundryValues";
@@ -48,8 +36,7 @@ import { theme } from "../theme";
 import { PickerItem } from "react-native-woodpicker";
 
 import { useEditPropertyMutation } from "../hooks/mutations/useEditPropertyMutation";
-import { useLoading } from "../hooks/useLoading";
-import { useNavigation } from "@react-navigation/native";
+import { useEditPropertyQuery } from "../hooks/queries/useEditPropertyQuery";
 
 const EditPropertyScreen = ({
   route,
@@ -63,30 +50,7 @@ const EditPropertyScreen = ({
   const [showAlternateScreen, setShowAlternateScreen] = useState("");
   const [apartmentIndex, setApartmentIndex] = useState<number>(-1);
   const { user } = useUser();
-
-  const navigation = useNavigation()
-  const { setLoading } = useLoading();
-  const queryClient = useQueryClient();
-  const editProperty = useMutation(
-    (obj: EditPropertyObj) => axios.patch(`${endpoints.updateProperty}${route.params.propertyID}`, obj),
-    {
-      onMutate: () => {
-        setLoading(true);
-      },
-      onError(err) {
-        setLoading(false);
-        alert("Error updating property")
-      },
-      onSuccess() {
-        queryClient.invalidateQueries(queryKeys.myProperties);
-        setLoading(false);
-        navigation.goBack();
-      }
-    }
-
-  )
-
-  console.log("editProperty: ", )
+  const editProperty = useEditPropertyMutation();
 
   const handleShowAlternateScreen = (index: number, name: string) => {
     if (scrollViewRef.current) scrollViewRef.current.scrollToPosition(0, 0);
@@ -99,12 +63,8 @@ const EditPropertyScreen = ({
     setApartmentIndex(-1);
   };
 
-  const property: UseQueryResult<{ data: Property }, unknown> = useQuery(
-    "property",
-    () => axios.get(endpoints.getPropertyByID + route.params.propertyID)
-  );
-
-  const propertyData = property.data?.data;
+  const property = useEditPropertyQuery(route.params.propertyID);
+  const propertyData = property.data;
 
   let initialApartments: TempApartment[] = [];
   if (propertyData) {
@@ -206,7 +166,7 @@ const EditPropertyScreen = ({
                   active: i.active,
                   images: i.images,
                   amenities: i.amenities,
-                  description: i.description,                
+                  description: i.description,
                 });
               }
 
@@ -232,7 +192,7 @@ const EditPropertyScreen = ({
                 website: values.website,
               };
 
-              editProperty.mutate(obj);
+              editProperty.mutate({ obj, propertyID: route.params.propertyID });
 
             }}
           >
@@ -277,7 +237,7 @@ const EditPropertyScreen = ({
                   <UnitsInput
                     unitType={values.unitType}
                     apartments={values.apartments}
-                    property={property.data?.data}
+                    property={propertyData}
                     touched={touched}
                     errors={errors}
                     setFieldTouched={setFieldTouched}

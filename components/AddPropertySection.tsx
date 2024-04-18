@@ -7,7 +7,6 @@ import { useState } from "react";
 import { PickerItem } from "react-native-woodpicker";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as yup from "yup";
-import { useMutation, useQueryClient } from "react-query";
 
 import { Screen } from "./Screen";
 import { Select } from "../components/Select";
@@ -22,35 +21,14 @@ import { CreateProperty } from "../types/property";
 import { useUser } from "../hooks/useUser";
 import { bathValues } from "../constants/bathValues"
 import { bedValues } from "../constants/bedValues"
-import { StackActions, useNavigation } from "@react-navigation/native";
-import axios from "axios";
-import { endpoints, queryKeys } from "../constants";
-import { Property } from "../types/property";
+import { useCreatePropertyMutation } from "../hooks/mutations/useCreatePropertyMutation ";
 
 export const AddPropertySection = () => {
   const { user } = useUser();
-  const navigation = useNavigation();
   const [searchingLocation, setSearchingLocation] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchLocation[]>([]);
-  const queryClient = useQueryClient();
 
-  const createProperty = useMutation(
-    "property",
-    async (obj: CreateProperty) => {
-      return axios.post(endpoints.createProperty, obj);
-    },
-    {
-      onError() {
-        alert("Unable to create property!");
-      },
-      onSuccess(data: {data: Property}) {
-        queryClient.invalidateQueries(queryKeys.myProperties)
-        navigation.dispatch(
-          StackActions.replace("EditProperty", {propertyID: data.data.ID})
-        );
-      }
-    }
-  )
+  const createProperty = useCreatePropertyMutation();
 
   const onSubmit = (values: {
     unitType: string;

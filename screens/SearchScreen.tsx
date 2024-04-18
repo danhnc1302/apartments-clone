@@ -26,6 +26,7 @@ const SearchScreen = ({
   const [scrollAnimation] = useState(new Animated.Value(0));
   const mapRef = useRef<MapView | null>(null);
   const [location, setLocation] = useState<string | undefined>(undefined);
+  
   let boundingBox: number[] = [];
   if (route.params?.boundingBox)
     boundingBox = [
@@ -71,11 +72,11 @@ const SearchScreen = ({
           initialRegion={
             route.params
               ? {
-                  latitude: Number(route.params.lat),
-                  longitude: Number(route.params.lon),
-                  latitudeDelta: 0.4,
-                  longitudeDelta: 0.4,
-                }
+                latitude: Number(route.params.lat),
+                longitude: Number(route.params.lon),
+                latitudeDelta: 0.4,
+                longitudeDelta: 0.4,
+              }
               : undefined
           }
         />

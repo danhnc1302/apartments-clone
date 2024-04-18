@@ -7,7 +7,6 @@ import axios from "axios";
 
 import { PropertyHeaderSection } from "../components/PropertyDetailsSections/PropertyHeaderSection";
 import { Screen } from "../components/Screen";
-import { properties } from "../data/properties";
 import { theme } from "../theme";
 import { PricingAndFLoorPlanSection } from "../components/PropertyDetailsSections/PricingAndFloorPlanSection";
 import { AboutSection } from "../components/PropertyDetailsSections/AboutSection";
@@ -16,25 +15,21 @@ import { AmenitiesSection } from "../components/PropertyDetailsSections/Amenitie
 import { LeaseAndFeesSection } from "../components/PropertyDetailsSections/LeaseAndFeesSection";
 import { LocationSection } from "../components/PropertyDetailsSections/LocationSection";
 import { ReviewSection } from "../components/PropertyDetailsSections/ReviewSection";
-import { endpoints, queryKeys } from "../constants";
 import { useSelectedPropertyQuery } from "../hooks/queries/useSelectedPropertyQuery";
-
 
 const PropertyDetailsScreen = ({
   route,
 }: {
   route: { params: { propertyID: number } };
 }) => {
-  // const property = useSelectedPropertyQuery(route.params?.propertyID);
-  const index = properties.findIndex((i) => i.ID === route.params.propertyID)
-  const property = properties[index]
+  const property = useSelectedPropertyQuery(route.params.propertyID);
 
-  if (!property) return <Text>Unable to get property ...</Text>;
+  if (!property.data) return <Text>Unable to get property ...</Text>;
 
   return (
     <Screen>
       <FlatList
-        data={[property]}
+        data={[property.data]}
         keyExtractor={(item) => item.ID.toString()}
         renderItem={({ item }) => (
           <>

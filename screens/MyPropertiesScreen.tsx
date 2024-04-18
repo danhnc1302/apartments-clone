@@ -12,21 +12,13 @@ import { Loading } from "../components/Loading";
 import { Card } from "../components/Card";
 import { ModalHeader } from "../components/ModalHeader";
 import { theme } from "../theme";
-import { useQuery } from "react-query";
-import axios from "axios";
-import { Property } from "../types/property";
-import { endpoints, queryKeys } from "../constants";
+import { useMyPropertiesQuery } from "../hooks/queries/useMyPropertiesQuery";
 
 const MyPropertiesScreen = () => {
   const navigation = useNavigation();
   const { user } = useUser();
 
-  const properties = useQuery(queryKeys.myProperties, async () => {
-    if(user) {
-      console.log(`${endpoints.getPropertiesByUserID}${user.ID}`)
-      return axios.get<Property[]>(`${endpoints.getPropertiesByUserID}${user.ID}`)
-    }
-  })
+  const properties = useMyPropertiesQuery();
 
   const addPropertyNavigation = () => {
     navigation.navigate("AddProperty");
@@ -34,11 +26,11 @@ const MyPropertiesScreen = () => {
 
   if (!user) return <SignUpOrSignInScreen />;
 
-  if(properties.isFetching || properties.isLoading) return <Loading/>
+  if(properties.isLoading) return <Loading/>
 
   return (
     <Screen>
-      {properties?.data?.data && properties.data?.data.length > 0 ? (
+      {properties?.data && properties.data.length > 0 ? (
         <FlatList
           ListHeaderComponent={
             <>
@@ -74,7 +66,7 @@ const MyPropertiesScreen = () => {
               </Button>
             </>
           }
-          data={properties.data.data}
+          data={properties.data}
           renderItem={({ item }) => (
             <Card
               style={styles.card}

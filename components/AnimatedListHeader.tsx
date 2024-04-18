@@ -18,13 +18,13 @@ import { HeaderInput } from "./HeaderInput";
 import { HeaderFilterButtons } from "./HeaderFilterButtons";
 import { HeaderLogistics } from "./HeaderLogistics";
 
-export const AnimatedListHeader = ({ 
-    scrollAnimation, 
+export const AnimatedListHeader = ({
+    scrollAnimation,
     mapShown,
     setMapShown,
     location,
     availableProperties,
-}: { 
+}: {
     scrollAnimation: Animated.Value,
     mapShown: boolean,
     setMapShown: (bool: boolean) => void,
@@ -47,11 +47,11 @@ export const AnimatedListHeader = ({
         )
     );
 
-    const navBarTranslate = clampedScroll.interpolate({
-        inputRange: [0, HEADERHEIGHT],
-        outputRange: [0, -HEADERHEIGHT],
+    const navbarTranslate = clampedScroll.interpolate({
+        inputRange: availableProperties && !mapShown ? [0, HEADERHEIGHT] : [0, 0],
+        outputRange: availableProperties && !mapShown ? [0, -HEADERHEIGHT] : [0, 0],
         extrapolate: "clamp",
-    })
+    });
 
     const onLayout = (event: LayoutChangeEvent) => {
         let { height } = event.nativeEvent.layout
@@ -73,15 +73,15 @@ export const AnimatedListHeader = ({
 
     return (
         <Animated.View
-            style={[styles.container, {transform: [{ translateY: navBarTranslate }]}]}
+            style={[styles.container, { transform: [{ translateY: navbarTranslate }] }]}
             onLayout={onLayout}
         >
             <View style={{ marginHorizontal: LISTMARGIN }}>
-                <HeaderInput location={location}/>
-                <HeaderFilterButtons/>
+                <HeaderInput location={location} />
+                <HeaderFilterButtons />
             </View>
             <Divider style={styles.divider} />
-            <HeaderLogistics mapShown={mapShown} setMapShown={setMapShown} availableProperties={availableProperties}/>
+            <HeaderLogistics mapShown={mapShown} setMapShown={setMapShown} availableProperties={availableProperties} />
         </Animated.View>
     )
 }
