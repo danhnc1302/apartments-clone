@@ -5,11 +5,12 @@ import * as SecureStore from "expo-secure-store";
 import { useQueryClient } from "react-query";
 import { queryKeys } from "../constants";
 import { Property } from "../types/property";
+import { alterAllowsNotifications, alterPushToken } from "../services/user";
 
 export const useUser = () => {
   const { user, setUser } = useContext(AuthContext);
   const queryClient = useQueryClient();
-  
+
   const setSavedProperties = (savedProperties: number[]) => {
     if (user) {
       const newUser = { ...user };
@@ -36,9 +37,9 @@ export const useUser = () => {
   };
 
   const logout = () => {
-      setUser(null);
-      SecureStore.deleteItemAsync("user");
-      queryClient.clear();
+    setUser(null);
+    SecureStore.deleteItemAsync("user");
+    queryClient.clear();
   };
 
   const setAndStoreUser = (user: User) => {
@@ -47,12 +48,47 @@ export const useUser = () => {
     SecureStore.setItemAsync("user", stringUser);
   };
 
-   return {
+  const addPushToken = async (token: string) => {
+    if (user) {
+      const updatedUser = { ...user };
+      const prevUser = { ...user };
+
+      updatedUser.pushToken = token;
+
+      setAndStoreUser(updatedUser);
+
+      try {
+        await alterPushToken(user.ID, "add", token, user.accessToken);
+      } catch (error) {
+        setAndStoreUser(prevUser);
+      }
+    }
+  };
+
+  const setAllowsNotifications = async (allowed: boolean) => {
+    if (user) {
+      const updatedUser = { ...user };
+      const prevUser = { ...user };
+      updatedUser.allowsNotifications = allowed;
+      setAndStoreUser(updatedUser);
+
+      try {
+        await alterAllowsNotifications(user.ID, allowed, user.accessToken);
+      } catch (error) {
+        console.error(error);
+        setAndStoreUser(prevUser);
+      }
+    }
+  };
+
+  return {
     user,
     setUser,
     setSavedProperties,
     setAndStoreUser,
     login,
-    logout
+    logout,
+    setAllowsNotifications,
+    addPushToken
   };
 };

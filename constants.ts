@@ -1,7 +1,5 @@
 import { Dimensions, Platform, StatusBar } from "react-native";
 import { AuthRequestPromptOptions } from "expo-auth-session";
-export const LISTMARGIN = 10;
-export const WIDTH = Dimensions.get("screen").width - LISTMARGIN * 2;
 
 const baseHeight = 160;
 const iosNotch = 40;
@@ -12,6 +10,8 @@ let androidNotch = 0;
 if (StatusBar.currentHeight) androidNotch = StatusBar.currentHeight;
 androidHeight += androidNotch;
 
+export const LISTMARGIN = 10;
+export const WIDTH = Dimensions.get("screen").width - LISTMARGIN * 2;
 export const HEADERHEIGHT = Platform.OS === "ios" ? iosHeight : androidHeight;
 export const PHOTOS_STR = "photos";
 export const AMENITIES_STR = "amenities";
@@ -31,6 +31,9 @@ const apartmentEndpoint = serverUrl + apartment;
 const reviewEndpoint = serverUrl + review;
 const savedEndpoint = (id: number) => `${userEndpoint}/${id}/properties/saved`;
 const contactedEndpoint = (id: number) => `${userEndpoint}/${id}/properties/contacted`;
+const pushTokenEndpoint = (id: number) => `${userEndpoint}/${id}/pushtoken`;
+const allowsNotificationsEndpoint = (id: number) =>
+  `${userEndpoint}/${id}/settings/notifications`;
 
 export const endpoints = {
     search: locationEndpoint + "/search",
@@ -54,6 +57,8 @@ export const endpoints = {
     alterSavedPropertiesByUserID: savedEndpoint,
     getPropertiesByBoundingBox: propertyEndpoint + "/search",
     getContactedPropertiesByUserID: contactedEndpoint,
+    alterPushToken: pushTokenEndpoint,
+    allowsNotifications: allowsNotificationsEndpoint,
 }
 
 export const proxyOptions: AuthRequestPromptOptions = {

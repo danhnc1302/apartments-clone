@@ -3,10 +3,10 @@
     "name": "apartments-clone",
     "slug": "apartments-clone",
     "scheme": [
-      "com.danhdevapp.apartments-clone",
+      "com.danhdevapp.apartmentsclone",
       "fb1136500530862081"
     ],
-    "projectNameForProxy": "@danhdevapp/apartments-clone",
+    "projectNameForProxy": "@danhdevapp/apartmentsclone",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,7 +21,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.danhdevapp.apartments-clone"
+      "bundleIdentifier": "com.danhdevapp.apartmentsclone"
     },
     "android": {
       "adaptiveIcon": {
@@ -32,6 +32,7 @@
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
       ],
+      "googleServicesFile": "./google-services.json",
       "package": "com.danhdevapp.apartmentsclone"
     },
     "web": {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -11,6 +11,8 @@ import {
 import { theme } from "../theme";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 // import LinkingConfiguration from "./LinkingConfiguration";
+import * as Notifications from "expo-notifications";
+import { useNotifications } from "../hooks/useNotifications";
 
 import SearchScreen from "../screens/SearchScreen";
 import AccountScreen from "../screens/AccountScreen";
@@ -44,6 +46,30 @@ export default function Navigation() {
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 function RootNavigation() {
+
+    const { registerForPushNotificationsAsync, handleNotificationResponse } = useNotifications();
+
+    useEffect(() => {
+        registerForPushNotificationsAsync();
+        Notifications.setNotificationHandler({
+            handleNotification: async () => ({
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+                shouldSetBadge: true,
+            }),
+        });
+
+        const responseListener =
+            Notifications.addNotificationResponseReceivedListener(
+                handleNotificationResponse
+            );
+
+        return () => {
+            if (responseListener)
+                Notifications.removeNotificationSubscription(responseListener);
+        };
+    }, []);
+
     return (
         <Stack.Navigator>
             <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
