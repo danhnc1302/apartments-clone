@@ -45,7 +45,7 @@ export const endpoints = {
     apple: userEndpoint + "/apple",
     forgotPassword: userEndpoint + "/forgotpassword",
     resetPassword: userEndpoint + "/resetpassword",
-    createProperty: propertyEndpoint + "/create",
+    createProperty: propertyEndpoint,
     getPropertyByID: propertyEndpoint + "/",
     getPropertiesByUserID: propertyEndpoint + "/userId/",
     deleteProperty: propertyEndpoint + "/",

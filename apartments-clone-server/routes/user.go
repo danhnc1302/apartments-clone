@@ -279,37 +279,37 @@ func AlterUserSavedProperties(ctx iris.Context) {
 	ctx.StatusCode(iris.StatusNoContent)
 }
 
-// func GetUserContactedProperties(ctx iris.Context) {
-// 	params := ctx.Params()
-// 	id := params.Get("id")
+func GetUserContactedProperties(ctx iris.Context) {
+	params := ctx.Params()
+	id := params.Get("id")
 
-// 	var conversations []models.Conversation
-// 	conversationsExist := storage.DB.Where("tenant_id = ?", id).Find(&conversations)
-// 	if conversationsExist.Error != nil {
-// 		utils.CreateInternalServerError(ctx)
-// 		return
-// 	}
+	var conversations []models.Conversation
+	conversationsExist := storage.DB.Where("tenant_id = ?", id).Find(&conversations)
+	if conversationsExist.Error != nil {
+		utils.CreateInternalServerError(ctx)
+		return
+	}
 
-// 	if conversationsExist.RowsAffected == 0 {
-// 		utils.CreateNotFound(ctx)
-// 		return
-// 	}
+	if conversationsExist.RowsAffected == 0 {
+		utils.CreateNotFound(ctx)
+		return
+	}
 
-// 	var properties []models.Property
-// 	var propertyIDs []uint
-// 	for _, conversation := range conversations {
-// 		propertyIDs = append(propertyIDs, conversation.PropertyID)
-// 	}
+	var properties []models.Property
+	var propertyIDs []uint
+	for _, conversation := range conversations {
+		propertyIDs = append(propertyIDs, conversation.PropertyID)
+	}
 
-// 	propertiesExist := storage.DB.Where("id IN ?", propertyIDs).Find(&properties)
+	propertiesExist := storage.DB.Where("id IN ?", propertyIDs).Find(&properties)
 
-// 	if propertiesExist.Error != nil {
-// 		utils.CreateInternalServerError(ctx)
-// 		return
-// 	}
+	if propertiesExist.Error != nil {
+		utils.CreateInternalServerError(ctx)
+		return
+	}
 
-// 	ctx.JSON(properties)
-// }
+	ctx.JSON(properties)
+}
 
 
 func returnUser(user models.User, ctx iris.Context) {

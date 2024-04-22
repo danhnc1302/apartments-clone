@@ -34,6 +34,9 @@ func performMigrations(db *gorm.DB) {
 		&models.Property{},
 		&models.Apartment{},
 		&models.Review{},
+		&models.Conversation{},
+		&models.Message{},
+
 	)
 }
 

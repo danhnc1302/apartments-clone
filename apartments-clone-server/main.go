@@ -47,7 +47,7 @@ func main() {
 
 	property := app.Party("api/property")
 	{
-		property.Post("/create", routes.CreateProperty)
+		property.Post("/", routes.CreateProperty)
 		property.Get("/{id}", routes.GetProperty)
 		property.Get("/userId/{id}", routes.GetPropertiesByUserID)
 		property.Delete("/{id}", routes.DeleteProperty)
@@ -64,6 +64,18 @@ func main() {
 	review := app.Party("api/review")
 	{
 		review.Post("/property/{id}", routes.CreateReview)
+	}
+
+	conversation := app.Party("/api/conversation")
+	{
+		conversation.Post("/", routes.CreateConversation)
+		conversation.Get("/{id}", routes.GetConversationByID)
+		conversation.Get("/user/{id}", routes.GetConversationsByUserID)
+	}
+	
+	messages := app.Party("/api/messages")
+	{
+		messages.Post("/", routes.CreateMessage)
 	}
 
 	notifications := app.Party("/api/notifications")
