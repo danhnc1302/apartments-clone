@@ -325,7 +325,7 @@ func returnUser(user models.User, ctx iris.Context) {
 		"lastName":            user.LastName,
 		"email":               user.Email,
 		"savedProperties":     user.SavedProperties,
-		// "allowsNotifications": user.AllowsNotifications,
+		"allowsNotifications": user.AllowsNotifications,
 		// "accessToken":         string(tokenPair.AccessToken),
 		// "refreshToken":        string(tokenPair.RefreshToken),
 	})
@@ -553,6 +553,96 @@ func getUserByID(id string, ctx iris.Context) *models.User {
 	return &user
 }
 
+func AlterPushToken(ctx iris.Context) {
+	params := ctx.Params()
+	id := params.Get("id")
+
+	user := getUserByID(id, ctx)
+	if user == nil {
+		return
+	}
+
+	var req AlterPushTokenInput
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		utils.HandleValidationErrors(err, ctx)
+		return
+	}
+
+	var unMarshalledTokens []string
+	var pushTokens []string
+
+	if user.PushTokens != nil {
+		unmarshalErr := json.Unmarshal(user.PushTokens, &unMarshalledTokens)
+
+		if unmarshalErr != nil {
+			utils.CreateInternalServerError(ctx)
+			return
+		}
+	}
+
+	if req.Op == "add" {
+		if !slices.Contains(unMarshalledTokens, req.Token) {
+			pushTokens = append(unMarshalledTokens, req.Token)
+		} else {
+			pushTokens = unMarshalledTokens
+		}
+	} else if req.Op == "remove" && len(unMarshalledTokens) > 0 {
+		for _, token := range unMarshalledTokens {
+			if req.Token != token {
+				pushTokens = append(pushTokens, token)
+			}
+		}
+	}
+
+	marshalledTokens, marshalErr := json.Marshal(pushTokens)
+
+	if marshalErr != nil {
+		utils.CreateInternalServerError(ctx)
+		return
+	}
+
+	user.PushTokens = marshalledTokens
+
+	rowsUpdated := storage.DB.Model(&user).Updates(user)
+
+	if rowsUpdated.Error != nil {
+		utils.CreateInternalServerError(ctx)
+		return
+	}
+
+	ctx.StatusCode(iris.StatusNoContent)
+}
+
+func AllowsNotifications(ctx iris.Context) {
+	params := ctx.Params()
+	id := params.Get("id")
+
+	user := getUserByID(id, ctx)
+	if user == nil {
+		return
+	}
+
+	var req AllowsNotificationsInput
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		utils.HandleValidationErrors(err, ctx)
+		return
+	}
+
+	user.AllowsNotifications = req.AllowsNotifications
+
+	rowsUpdated := storage.DB.Model(&user).Updates(user)
+
+	if rowsUpdated.Error != nil {
+		utils.CreateInternalServerError(ctx)
+		return
+	}
+
+	ctx.StatusCode(iris.StatusNoContent)
+}
+
+
 type RegisterUserInput struct {
 	FirstName string `json:"firstName" validate:"required,max=256"`
 	LastName  string `json:"lastName" validate:"required,max=256"`
@@ -602,7 +692,7 @@ type AlterSavedPropertiesInput struct {
 
 type AlterPushTokenInput struct {
 	Token string `json:"token" validate:"required"`
-	Op    string `json:"op" validate:"required"`
+	Op         string `json:"op" validate:"required"`
 }
 
 type AllowsNotificationsInput struct {

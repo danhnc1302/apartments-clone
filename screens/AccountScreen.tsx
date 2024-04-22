@@ -1,4 +1,3 @@
-import React,{useContext} from "react";
 import { ScrollView, View, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Text, Button } from "@ui-kitten/components";
@@ -8,13 +7,9 @@ import { SignUpAndSignInButtons } from "../components/SignUpAndSignInButtons";
 import { theme } from "../theme";
 import { ButtonList } from "../components/ButtonList";
 import { useUser } from "../hooks/useUser";
-import { AuthContext } from "../context";
 
 const AccountScreen = () => {
-
-  const { user } = useContext(AuthContext);
-  const { logout } = useUser();
-  
+  const { user, logout } = useUser();
   const navigation = useNavigation();
 
   const firstSignedOutButtons = [
@@ -168,16 +163,11 @@ const AccountScreen = () => {
               appearance={"hint"}
               style={[styles.brandText, styles.specialMarginVertical]}
             >
-              danhnguyenkx.com Version 1.0.0
+              JeremyPersing.com Version 1.0.0
             </Text>
           </>
         )}
       </ScrollView>
-      <Button onPress={() => {
-        navigation.navigate("ResetPassword", { token: "fjkajkldjf;ladk" })
-      }}>
-          Reset Password
-      </Button>
     </Screen>
   );
 };

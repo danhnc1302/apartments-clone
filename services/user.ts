@@ -107,7 +107,7 @@ export const alterPushToken = (
   userID: number,
   op: "add" | "remove",
   pushToken: string,
-  accessToken: string
+  // accessToken: string
 ) =>
   axios.patch(
     endpoints.alterPushToken(userID),
@@ -115,24 +115,24 @@ export const alterPushToken = (
       op,
       token: pushToken,
     },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
+    // {
+    //   headers: {
+    //     Authorization: `Bearer ${accessToken}`,
+    //   },
+    // }
   );
 
 export const alterAllowsNotifications = (
   userID: number,
   allowsNotifications: boolean,
-  accessToken: string
+  // accessToken: string
 ) =>
   axios.patch(
     endpoints.allowsNotifications(userID),
     { allowsNotifications },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
+    // {
+    //   headers: {
+    //     Authorization: `Bearer ${accessToken}`,
+    //   },
+    // }
   );

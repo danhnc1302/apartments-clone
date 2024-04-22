@@ -50,7 +50,7 @@ const MessagePropertyScreen = ({
   const handleSubmit = async (values: { email: string }) => {
     console.log(values.email)
   };
-
+  console.log("danh")
   if (!user) return <SignUpOrSignInScreen />;
   if (!property) return <Text>Unable to get property ...</Text>;
   // if (conversations.isLoading) return <Loading />;

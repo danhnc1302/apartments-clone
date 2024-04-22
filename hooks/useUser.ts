@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { AuthContext } from "../context";
 import { User } from "../types/user";
 import * as SecureStore from "expo-secure-store";
+import * as Notifications from "expo-notifications";
 import { useQueryClient } from "react-query";
 import { queryKeys } from "../constants";
 import { Property } from "../types/property";
@@ -11,6 +12,13 @@ export const useUser = () => {
   const { user, setUser } = useContext(AuthContext);
   const queryClient = useQueryClient();
 
+
+  const setAndStoreUser = (user: User) => {
+    let stringUser = JSON.stringify(user);
+    setUser(user);
+    SecureStore.setItemAsync("user", stringUser);
+  };
+
   const setSavedProperties = (savedProperties: number[]) => {
     if (user) {
       const newUser = { ...user };
@@ -19,9 +27,8 @@ export const useUser = () => {
     }
   };
   const login = (user: User) => {
-    let stringUser = JSON.stringify(user);
-    setUser(user);
-    SecureStore.setItemAsync("user", stringUser);
+    setAndStoreUser(user);
+    // Nothing else is working so this is my last resort
     const searchedProperties: Property[] | undefined = queryClient.getQueryData(
       queryKeys.searchProperties
     );
@@ -33,19 +40,22 @@ export const useUser = () => {
       }
       queryClient.setQueryData(queryKeys.searchProperties, searchedProperties);
     }
-
   };
 
-  const logout = () => {
-    setUser(null);
-    SecureStore.deleteItemAsync("user");
-    queryClient.clear();
-  };
-
-  const setAndStoreUser = (user: User) => {
-    let stringUser = JSON.stringify(user);
-    setUser(user);
-    SecureStore.setItemAsync("user", stringUser);
+  const logout = async () => {
+    if (user) {
+      const prevUser = { ...user };
+      setUser(null);
+      SecureStore.deleteItemAsync("user");
+      queryClient.clear();
+      try {
+        const token = (await Notifications.getExpoPushTokenAsync()).data;
+        if (token)
+          await alterPushToken(user?.ID, "remove", token);
+      } catch (error) {
+        setAndStoreUser(prevUser);
+      }
+    }
   };
 
   const addPushToken = async (token: string) => {
@@ -58,7 +68,7 @@ export const useUser = () => {
       setAndStoreUser(updatedUser);
 
       try {
-        await alterPushToken(user.ID, "add", token, user.accessToken);
+        await alterPushToken(user.ID, "add", token);
       } catch (error) {
         setAndStoreUser(prevUser);
       }
@@ -73,7 +83,7 @@ export const useUser = () => {
       setAndStoreUser(updatedUser);
 
       try {
-        await alterAllowsNotifications(user.ID, allowed, user.accessToken);
+        await alterAllowsNotifications(user.ID, allowed);
       } catch (error) {
         console.error(error);
         setAndStoreUser(prevUser);

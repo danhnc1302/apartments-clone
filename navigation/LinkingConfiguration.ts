@@ -30,7 +30,7 @@ const linking: LinkingOptions<RootStackParamList> = {
       },
       FindLocations: "findlocations",
       ForgotPassword: "forgotpassword",
-      MessageProperty: { path: "message/:propertyID" },
+      MessageProperty: { path: "messages/:propertyID" },
       PropertyDetails: "propertydetails",
       ResetPassword: { path: "resetpassword/:token" },
       SignIn: "signin",
