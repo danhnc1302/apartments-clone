@@ -10,7 +10,7 @@ func TestMessageNotification(ctx iris.Context) {
 	dns := os.Getenv("DB_CONNECTION_STRING")
 	pushToken := os.Getenv("EXPONENT_PUSH_TOKEN")
 	data := map[string]string{
-		"url": "exp://" + dns + ":8081/--/messages/19",
+		"url": "exp://" + dns + ":8081/--/messageproperty/19",
 	}
 
 	err := utils.SendNotification(

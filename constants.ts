@@ -17,7 +17,10 @@ export const PHOTOS_STR = "photos";
 export const AMENITIES_STR = "amenities";
 export const DESCRIPTION_STR = "description";
 
-const serverUrl = "http:/192.168.1.9:4000/api";
+const serverUrl = "http:/192.168.1.8:4000/api";
+const chatUrl = "http:/192.168.1.8:3000";
+const conversation = "/conversation";
+const messages = "/messages";
 const location = "/location";
 const user = "/user";
 const property = "/property";
@@ -29,6 +32,8 @@ const userEndpoint = serverUrl + user;
 const propertyEndpoint = serverUrl + property;
 const apartmentEndpoint = serverUrl + apartment;
 const reviewEndpoint = serverUrl + review;
+const conversationEndpoint = serverUrl + conversation;
+const messagesEndpoint = serverUrl + messages;
 const savedEndpoint = (id: number) => `${userEndpoint}/${id}/properties/saved`;
 const contactedEndpoint = (id: number) => `${userEndpoint}/${id}/properties/contacted`;
 const pushTokenEndpoint = (id: number) => `${userEndpoint}/${id}/pushtoken`;
@@ -36,6 +41,7 @@ const allowsNotificationsEndpoint = (id: number) =>
   `${userEndpoint}/${id}/settings/notifications`;
 
 export const endpoints = {
+    chat: chatUrl,
     search: locationEndpoint + "/search",
     autoComplete: locationEndpoint + "/autocomplete",
     register: userEndpoint + "/register",
@@ -59,6 +65,10 @@ export const endpoints = {
     getContactedPropertiesByUserID: contactedEndpoint,
     alterPushToken: pushTokenEndpoint,
     allowsNotifications: allowsNotificationsEndpoint,
+    createConversation: conversationEndpoint,
+    getConversationByID: conversationEndpoint + "/",
+    getConversationsByUserID: conversationEndpoint + "/user/",
+    createMessage: messagesEndpoint,
 }
 
 export const proxyOptions: AuthRequestPromptOptions = {

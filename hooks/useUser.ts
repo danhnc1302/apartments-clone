@@ -7,6 +7,7 @@ import { useQueryClient } from "react-query";
 import { queryKeys } from "../constants";
 import { Property } from "../types/property";
 import { alterAllowsNotifications, alterPushToken } from "../services/user";
+import { socket } from "../constants/socket";
 
 export const useUser = () => {
   const { user, setUser } = useContext(AuthContext);
@@ -33,6 +34,15 @@ export const useUser = () => {
       queryKeys.searchProperties
     );
 
+    socket.auth = {
+      userID: user.ID,
+      username:
+        user.firstName && user.lastName
+          ? `${user.firstName} ${user.lastName}`
+          : `${user.email}`,
+    };
+    socket.connect();
+
     if (searchedProperties) {
       for (let i of searchedProperties) {
         i.liked = false;
@@ -47,6 +57,7 @@ export const useUser = () => {
       const prevUser = { ...user };
       setUser(null);
       SecureStore.deleteItemAsync("user");
+      socket.disconnect();
       queryClient.clear();
       try {
         const token = (await Notifications.getExpoPushTokenAsync()).data;
