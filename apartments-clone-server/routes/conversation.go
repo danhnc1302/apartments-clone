@@ -8,7 +8,7 @@ import (
 	"sort"
 
 	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/middleware/jwt"
+	// "github.com/kataras/iris/v12/middleware/jwt"
 	"gorm.io/gorm"
 )
 

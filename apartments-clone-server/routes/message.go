@@ -6,7 +6,7 @@ import (
 	"apartments-clone-server/utils"
 
 	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/middleware/jwt"
+	// "github.com/kataras/iris/v12/middleware/jwt"
 )
 
 func CreateMessage(ctx iris.Context) {
@@ -18,12 +18,12 @@ func CreateMessage(ctx iris.Context) {
 		return
 	}
 
-	claims := jwt.Get(ctx).(*utils.AccessToken)
+	// claims := jwt.Get(ctx).(*utils.AccessToken)
 
-	if req.SenderID != claims.ID {
-		ctx.StatusCode(iris.StatusForbidden)
-		return
-	}
+	// if req.SenderID != claims.ID {
+	// 	ctx.StatusCode(iris.StatusForbidden)
+	// 	return
+	// }
 
 	message := models.Message{
 		ConversationID: req.ConversationID,

@@ -7,6 +7,9 @@
       "fb1136500530862081"
     ],
     "projectNameForProxy": "@danhdevapp/apartmentsclone",
+    "plugins": [
+      "expo-notifications"    
+  ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -38,15 +41,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      [
-        "expo-notifications",
-        "expo-location",
-        {
-          "locationAlwaysAndWhenInUsePermission": "Allow DanhNguyen to use your location."
-        }
-      ]
-    ],
+
     "extra": {
       "eas": {
         "projectId": "e8042eb2-d683-42b9-93a9-5d2a8026dd3b"
