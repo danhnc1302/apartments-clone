@@ -313,11 +313,11 @@ func GetUserContactedProperties(ctx iris.Context) {
 
 
 func returnUser(user models.User, ctx iris.Context) {
-	// tokenPair, tokenErr := utils.CreateTokenPair(user.ID)
-	// if tokenErr != nil {
-	// 	utils.CreateInternalServerError(ctx)
-	// 	return
-	// }
+	tokenPair, tokenErr := utils.CreateTokenPair(user.ID)
+	if tokenErr != nil {
+		utils.CreateInternalServerError(ctx)
+		return
+	}
 
 	ctx.JSON(iris.Map{
 		"ID":                  user.ID,
@@ -326,8 +326,8 @@ func returnUser(user models.User, ctx iris.Context) {
 		"email":               user.Email,
 		"savedProperties":     user.SavedProperties,
 		"allowsNotifications": user.AllowsNotifications,
-		// "accessToken":         string(tokenPair.AccessToken),
-		// "refreshToken":        string(tokenPair.RefreshToken),
+		"accessToken":         string(tokenPair.AccessToken),
+		"refreshToken":        string(tokenPair.RefreshToken),
 	})
 }
 

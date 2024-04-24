@@ -21,6 +21,13 @@ func CreateConversation(ctx iris.Context) {
 		return
 	}
 
+	claims := jwt.Get(ctx).(*utils.AccessToken)
+
+	if req.SenderID != claims.ID {
+		ctx.StatusCode(iris.StatusForbidden)
+		return
+	}
+
 	var prevConversation models.Conversation
 	conversationExists := storage.DB.
 		Where("property_id = ? AND tenant_id = ? AND owner_id = ? ", req.PropertyID, req.TenantID, req.OwnerID).
@@ -66,12 +73,12 @@ func GetConversationByID(ctx iris.Context) {
 		return
 	}
 
-	// claims := jwt.Get(ctx).(*utils.AccessToken)
+	claims := jwt.Get(ctx).(*utils.AccessToken)
 
-	// if result.OwnerID != claims.ID && result.TenantID != claims.ID {
-	// 	ctx.StatusCode(iris.StatusForbidden)
-	// 	return
-	// }
+	if result.OwnerID != claims.ID && result.TenantID != claims.ID {
+		ctx.StatusCode(iris.StatusForbidden)
+		return
+	}
 
 	var messages []models.Message
 	messagesQuery := storage.DB.Where("conversation_id = ?", id).Order("created_at DESC").Find(&messages)

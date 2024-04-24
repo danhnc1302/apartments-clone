@@ -110,6 +110,21 @@ func DeleteProperty(ctx iris.Context) {
 	id := params.Get("id")
 	fmt.Println("DeleteProperty:",id)
 
+	var property models.Property
+	propertyExists := storage.DB.Find(&property, id)
+
+	if propertyExists.RowsAffected == 0 {
+		utils.CreateNotFound(ctx)
+		return
+	}
+
+	claims := jwt.Get(ctx).(*utils.AccessToken)
+
+	if property.UserID != claims.ID {
+		ctx.StatusCode(iris.StatusForbidden)
+		return
+	}
+
 	propertyDeleted := storage.DB.Delete(&models.Property{}, id)
 
 	if propertyDeleted.Error != nil {
@@ -131,12 +146,12 @@ func UpdateProperty(ctx iris.Context) {
 		return
 	}
 
-	// claims := jwt.Get(ctx).(*utils.AccessToken)
+	claims := jwt.Get(ctx).(*utils.AccessToken)
 
-	// if property.UserID != claims.ID {
-	// 	ctx.StatusCode(iris.StatusForbidden)
-	// 	return
-	// }
+	if property.UserID != claims.ID {
+		ctx.StatusCode(iris.StatusForbidden)
+		return
+	}
 
 	var propertyInput UpdatePropertyInput
 	err := ctx.ReadJSON(&propertyInput)
