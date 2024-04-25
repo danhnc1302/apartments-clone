@@ -7,6 +7,6 @@ export type User = {
   allowsNotifications: boolean;
   pushToken?: string;
   sessionID?: string;
-  // accessToken: string;
-  // refreshToken: string;
+  accessToken: string;
+  refreshToken: string;
 };

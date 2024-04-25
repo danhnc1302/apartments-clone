@@ -13,7 +13,11 @@ const fetchProperties = async (
 
   const response = await axios.get(
     endpoints.getSavedPropertiesByUserID(userID),
-  
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
 
   const data: Property[] = response.data;
@@ -27,7 +31,7 @@ export const useSavedPropertiesQuery = () => {
 
   return useQuery(
     queryKeys.savedProperties,
-    () => fetchProperties(user?.ID),
+    () => fetchProperties(user?.ID, user?.accessToken),
     {
       retry: false,
     }

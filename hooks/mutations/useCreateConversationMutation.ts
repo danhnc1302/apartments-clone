@@ -17,13 +17,18 @@ const createConversation = (values: CreateConversation, token?: string) =>
       senderID: values.senderID,
       receiverID: values.receiverID,
       text: values.text,
-    },
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
   );
 
 // This will only be called when a potential tenant wants to talk to an owner
 export const useCreateConversationMutation = () => {
   const queryClient = useQueryClient();
   const { navigate } = useNavigation();
+  const { user } = useUser();
 
   return useMutation(
     ({
@@ -50,6 +55,7 @@ export const useCreateConversationMutation = () => {
           senderID: tenantID,
           text,
         },
+        user?.accessToken
       ),
     {
       onSuccess: (

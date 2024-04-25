@@ -17,6 +17,11 @@ const saveOrUnsaveProperty = (
       propertyID,
       op,
     },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
 
 export const useSavePropertyMutation = () => {
@@ -25,7 +30,7 @@ export const useSavePropertyMutation = () => {
 
   return useMutation(
     ({ propertyID, op }: { propertyID: number; op: "add" | "remove" }) =>
-      saveOrUnsaveProperty(propertyID, op, user?.ID),
+      saveOrUnsaveProperty(propertyID, op, user?.ID, user?.accessToken),
     {
       onMutate: async ({ propertyID, op }) => {
         await queryClient.cancelQueries(queryKeys.savedProperties);

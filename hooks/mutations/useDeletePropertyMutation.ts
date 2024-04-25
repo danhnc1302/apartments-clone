@@ -6,14 +6,19 @@ import { Property } from "../../types/property";
 import { useUser } from "../useUser";
 
 const deleteProperty = (propertyID: number, token?: string) =>
-  axios.delete(`${endpoints.deleteProperty}${propertyID}`);
+  axios.delete(`${endpoints.deleteProperty}${propertyID}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
 export const useDeletePropertyMutation = () => {
   const queryClient = useQueryClient();
+  const { user } = useUser();
 
   return useMutation(
     ({ propertyID }: { propertyID: number }) =>
-      deleteProperty(propertyID),
+      deleteProperty(propertyID, user?.accessToken),
     {
       onMutate: async ({ propertyID }) => {
         await queryClient.cancelQueries(queryKeys.myProperties);

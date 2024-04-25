@@ -3,13 +3,14 @@ import Navigation from './navigation';
 import * as eva from '@eva-design/eva';
 import * as SecureStore from "expo-secure-store";
 import * as Notifications from "expo-notifications";
-import { ApplicationProvider, Layout, Text } from '@ui-kitten/components';
+import { ApplicationProvider } from '@ui-kitten/components';
 import { QueryClient, QueryClientProvider } from "react-query";
 import { theme } from "./theme";
 import { User } from './types/user';
 import { AuthContext, LoadingContext } from './context';
 import { socket } from './constants/socket';
 import { queryKeys } from './constants';
+import { refreshTokens } from "./services/tokens";
 
 const queryClient = new QueryClient();
 
@@ -23,13 +24,22 @@ export default function App() {
       const user = await SecureStore.getItemAsync("user");
       if (user) {
         const userObj: User = JSON.parse(user);
+        
+        const newTokens = await refreshTokens(userObj.refreshToken);
+        if (newTokens) {
+          userObj.accessToken = newTokens.accessToken;
+          userObj.refreshToken = newTokens.refreshToken;
+          SecureStore.setItemAsync("user", JSON.stringify(userObj));
+        }
         setUser(userObj);
+
         socket.auth = {
           userID: userObj.ID,
           username:
             userObj.firstName && userObj.lastName
               ? `${userObj.firstName} ${userObj.lastName}`
               : `${userObj.email}`,
+          accessToken: userObj.accessToken
         };
         socket.connect();
       }

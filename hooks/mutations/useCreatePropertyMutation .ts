@@ -7,7 +7,11 @@ import { CreateProperty, Property } from "../../types/property";
 import { useUser } from "../useUser";
 
 const createProperty = (obj: CreateProperty, token?: string) =>
-  axios.post<Property>(endpoints.createProperty, obj);
+  axios.post<Property>(endpoints.createProperty, obj, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
 export const useCreatePropertyMutation = () => {
   const queryClient = useQueryClient();
@@ -15,7 +19,7 @@ export const useCreatePropertyMutation = () => {
   const { user } = useUser();
 
   return useMutation(
-    (obj: CreateProperty) => createProperty(obj),
+    (obj: CreateProperty) => createProperty(obj, user?.accessToken),
     {
       onError() {
         alert("Unable to create property");

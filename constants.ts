@@ -21,6 +21,8 @@ const serverUrl = "http:/192.168.1.8:4000/api";
 const chatUrl = "http:/192.168.1.8:3000";
 const conversation = "/conversation";
 const messages = "/messages";
+const refresh = "/refresh";
+const refreshTokenEndpoint = serverUrl + refresh;
 const location = "/location";
 const user = "/user";
 const property = "/property";
@@ -69,6 +71,7 @@ export const endpoints = {
     getConversationByID: conversationEndpoint + "/",
     getConversationsByUserID: conversationEndpoint + "/user/",
     createMessage: messagesEndpoint,
+    refreshTokens: refreshTokenEndpoint,
 }
 
 export const proxyOptions: AuthRequestPromptOptions = {

@@ -13,7 +13,11 @@ const fetchProperties = async (
 
   const response = await axios.get(
     endpoints.getContactedPropertiesByUserID(userID),
-    
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
   );
 
   const data: Property[] = response.data;
@@ -25,7 +29,7 @@ export const useContactedPropertiesQuery = () => {
   const { user } = useUser();
   const queryInfo = useQuery(
     queryKeys.contactedProperties,
-    () => fetchProperties(user?.ID),
+    () => fetchProperties(user?.ID, user?.accessToken),
     {
       retry: false,
     }

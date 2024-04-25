@@ -56,6 +56,7 @@ export const useCreateMessageMutation = () => {
         senderID,
         receiverID,
         text,
+        user?.accessToken
       ),
     {
       onMutate: async ({
